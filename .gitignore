@@ -1,0 +1,5 @@
+
+proj/*
+!proj/*.tcl
+!proj/*.cmd
+!proj/*.sh
