@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`timescale 1ns / 1ps  //OJO !! HAY QUE ARREGLAR ESTO 
 //////////////////////////////////////////////////////////////////////////////////
 // Company: AC3E
 // Engineer: Nicolas I. Fredes Franco
@@ -21,8 +21,8 @@
 module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
     input clk, rst; 
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
-    input signed [8:0] phi; //desfase entre senales, cuantos bit debe tener ? 8 po men
-    input [17:0] fs_DAB;// esta en Hz
+    input signed [8:0] phi; //se entrega entre -255 y 255
+    input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000
     input sync; //signal de disparo 
     output [3:0] Sp; //Conmutaciones del primario
     output [3:0] Ss; //Conmutaciones del secundario
@@ -35,43 +35,105 @@ module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
     localparam estado3 = 3'd3;
     localparam estado4 = 3'd4;
 
-    //wire [4:0] hours; 
+    reg signed [1:0] V1, V2;
 
 
-    reg [2:0] state=INIT;
-    reg [9:0] contador1, contador2, contador1_next, contador2_next; 
+    reg [2:0] state1, state2, state1_next, state2_next;
+    reg signed [18:0] contador1, contador2, contador1_next, contador2_next; //revisar numero de bits
+    reg signed [18:0] tau1_cuentas, pi_cuentas, tau2_cuentas, phi_cuentas;
+    reg signed [18:0] link1_1, link1_2, link1_3, link1_4, link2_1, link2_2, link2_3, link2_4; 
 
-    reg []; 
+    initial
+        begin
+            state1=INIT;
+            state2=INIT;
+        end
 
 
+    // se procede a adaptar los inputs a numero de cuentas de reloj
 
     always@(*) //concatenacion de jaime para poder dividir (complemento a2)
     begin // 196_078 consutar referencia en verde
-        link1_1=({{9{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        tau1_cuentas=({{9{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        pi_cuentas=50000000/fs_DAB; // el numero debe ser 5*10^7
+        tau2_cuentas=({{9{t2[8]}},t2}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        phi_cuentas=({{9{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
     
 
+    //se definen los valores de transicion entre estados (numero de cuentas)
+
+    always@(*) 
+    begin 
+        link1_1 = pi_cuentas - tau1_cuentas;
+        link1_2 = pi_cuentas;
+        link1_3 = 2*pi_cuentas - tau1_cuentas;
+        link1_4 = 2*pi_cuentas;
+        link2_1 = pi_cuentas + phi_cuentas - tau2_cuentas;
+        link2_2 = pi_cuentas + phi_cuentas;
+        link2_3 = 2*pi_cuentas + phi_cuentas - tau2_cuentas;
+        link2_4 = 2*pi_cuentas + phi_cuentas;
+    end
+
+
+
 
     always@(*)// maquina de estados para el voltaje V1
         case(state1)
-        INIT:       state1_next = (sync)?estado1:INIT;
-        estado1:    state1_next = (contador1==link1_1)?estado2:estado1;// los valores de los link 
-        estado2:    state1_next = (contador1==link1_2)?estado3:estado2;// estan dados por las transiciones
-        estado3:    state1_next = (contador1==link1_3)?estado4:estado3;// entre los estados
-        estado4:    state1_next = (contador1==link1_4)?estado1:estado4;
-        default:    state1_next=INIT;
+        INIT:       begin 
+                        state1_next = (sync)?estado1:INIT;
+                        V1=2'd0;
+                    end    
+        estado1:    begin 
+                        state1_next = (contador1>=link1_1)?estado2:estado1;// los valores de los link 
+                        V1=2'd0;
+                    end
+        estado2:    begin 
+                        state1_next = (contador1>=link1_2)?estado3:estado2;// estan dados por las transiciones
+                        V1=2'd1;
+                    end
+        estado3:    begin
+                        state1_next = (contador1>=link1_3)?estado4:estado3;// entre los estados
+                        V1=2'd0;
+                    end    
+        estado4:    begin
+                        state1_next = (contador1>=link1_4)?estado1:estado4;
+                        V1=-2'd1;
+                    end    
+        default:    begin
+                        state1_next=INIT; 
+                        V1=2'd0;
+                    end    
         endcase
 
 
     always@(*)// maquina de estados para el voltaje V2
         case(state2)
-        INIT:       state2_next = (sync)?estado1:INIT;
-        estado1:    state2_next = (contador2==link2_1)?estado2:estado1;// los valores de los link 
-        estado2:    state2_next = (contador2==link2_2)?estado3:estado2;// estan dados por las transiciones
-        estado3:    state2_next = (contador2==link2_3)?estado4:estado3;// entre los estados
-        estado4:    state2_next = (contador2==link2_4)?estado1:estado4;
-        default:    state2_next=INIT;
+        INIT:       begin 
+                        state2_next = (sync)?estado1:INIT;
+                        V2=2'd0;
+                    end
+        estado1:    begin
+                        state2_next = (contador2>=link2_1)?estado2:estado1;// los valores de los link 
+                        V2=2'd0;
+                    end
+        estado2:    begin
+                        state2_next = (contador2>=link2_2)?estado3:estado2;// estan dados por las transiciones
+                        V2=2'd1;
+                    end  
+        estado3:    begin
+                        state2_next = (contador2>=link2_3)?estado4:estado3;// entre los estados
+                        V2=2'd0;
+                    end        
+        estado4:    begin
+                        state2_next = (contador2>=link2_4)?estado1:estado4;
+                        V2=-2'd1;
+                    end    
+        default:    begin
+                        state2_next=INIT;
+                        V2=2'd0;
+                    end
         endcase
 
 
@@ -79,10 +141,10 @@ module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
     always@(*)
     begin
         if(state1==INIT)
-            contador1=10'd0;
+            contador1=19'd0;
         else 
         begin
-            contador1=(contador1_next>512)? 10'd0 : contador1_next+10'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            contador1=(contador1_next>link1_4)? 19'd0 : contador1_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
         end
     end
 
@@ -90,12 +152,14 @@ module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
     always@(*)
     begin
         if(state2==INIT)
-            contador2=10'd0;
+            contador2=19'd0;
         else 
         begin
-            contador2=(contador1_next>512)? 10'd0 : contador2_next+10'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            contador2=(contador1_next>link2_4)? contador1_next : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
         end
     end
+
+
 
 
     always@(posedge clk)//conmutacion de las maquinas de estados
