@@ -57,7 +57,8 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         tau1_cuentas=({{10{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
         pi_cuentas=50000000/fs_DAB; // el numero debe ser 5*10^7
         tau2_cuentas=({{10{t2[8]}},t2}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
-        phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
+        //phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
+        phi_cuentas=(phi*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
     
@@ -66,14 +67,14 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
 
     always@(*) 
     begin 
-        link1_1 = pi_cuentas - tau1_cuentas;
+        link1_1 =  pi_cuentas - tau1_cuentas;
         link1_2 = pi_cuentas;
-        link1_3 = 2*pi_cuentas - tau1_cuentas;
-        link1_4 = 2*pi_cuentas;
+        link1_3 =  2*pi_cuentas - tau1_cuentas;
+        link1_4 =  2*pi_cuentas;
         link2_1 = pi_cuentas + phi_cuentas - tau2_cuentas;
         link2_2 = pi_cuentas + phi_cuentas;
-        link2_3 = 2*pi_cuentas + phi_cuentas - tau2_cuentas;
-        link2_4 = 2*pi_cuentas + phi_cuentas;
+        link2_3 =  2*pi_cuentas + phi_cuentas - tau2_cuentas;
+        link2_4 =  2*pi_cuentas + phi_cuentas;
     end
 
 
@@ -155,19 +156,9 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
             contador2=19'd0;
         else 
         begin
-            contador2=(contador2_next>link2_4-19'd1)? contador1_next : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            contador2=((contador2_next>(link2_4-19'd1) && (contador2_next[18]==1'b0)))? phi_cuentas : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
         end
     end
-
-
-
-
-    always@(posedge clk)//conmutacion de las maquinas de estados
-    begin
-        state1 <= state1_next;
-        state2 <= state2_next;
-    end
-
 
 
     always@(posedge clk) //Cuenta para patrones
@@ -175,6 +166,16 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         contador1_next <= contador1;
         contador2_next <= contador2;
     end
+
+
+    always@(posedge clk)//conmutacion de las maquinas de estadoss   
+    begin
+        state1 <= state1_next;
+        state2 <= state2_next;
+    end
+
+
+
 
 
 endmodule
