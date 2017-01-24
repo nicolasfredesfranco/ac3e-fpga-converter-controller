@@ -17,17 +17,17 @@
 // Revision 0.01 - File Created
 // Additional Comments: 
 //
-//////////////////////////////////////////////////////////////////////////////////
-module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
-    input clk, rst; 
+///////////////////////////////////////////////////////////////////////////////////
+module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
+    input clk; // implementar rst de emergencia  
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000
     input sync; //signal de disparo 
-    output [3:0] Sp; //Conmutaciones del primario
-    output [3:0] Ss; //Conmutaciones del secundario
+    //output [3:0] Sp; //Conmutaciones del primario
+    //output [3:0] Ss; //Conmutaciones del secundario
     
-    //parameter deadtime=8'd0; //ver que escala usar  
+    //parameter deadtime=8'd0; //ver que escala usar    
 
     localparam INIT = 3'd0;
     localparam estado1 = 3'd1;
@@ -35,7 +35,7 @@ module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
     localparam estado3 = 3'd3;
     localparam estado4 = 3'd4;
 
-    reg signed [1:0] V1, V2;
+    output reg signed [1:0] V1, V2;  // dejar como variables internas despues 
 
 
     reg [2:0] state1, state2, state1_next, state2_next;
@@ -54,10 +54,10 @@ module top(clk, rst, t1, t2, phi, fs_DAB, sync, Sp, Ss); //<3
 
     always@(*) //concatenacion de jaime para poder dividir (complemento a2)
     begin // 196_078 consutar referencia en verde
-        tau1_cuentas=({{9{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        tau1_cuentas=({{10{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
         pi_cuentas=50000000/fs_DAB; // el numero debe ser 5*10^7
-        tau2_cuentas=({{9{t2[8]}},t2}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
-        phi_cuentas=({{9{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
+        tau2_cuentas=({{10{t2[8]}},t2}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
     
