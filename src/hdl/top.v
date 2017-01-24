@@ -155,7 +155,7 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
             contador2=19'd0;
         else 
         begin
-            contador2=(contador1_next>link2_4-19'd1)? contador1_next : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            contador2=(contador2_next>link2_4-19'd1)? contador1_next : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
         end
     end
 
