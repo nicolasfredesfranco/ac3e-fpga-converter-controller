@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 ///////////////////////////////////////////////////////////////////////////////////
-module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
+module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
     input clk; // implementar rst de emergencia  
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
@@ -146,7 +146,7 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
                         state3_next = ((state1==estado4) || (state2==estado4))?estado1:INIT;//preguntar como se hace el o
                     end
         estado1:    begin
-                        state3_next = (state2==estado1)?estado2:((state1==estado1)estado3:estado1);
+                        state3_next = (state2==estado1)?estado2:((state1==estado1)?estado3:estado1);
                     end
         estado2:    begin
                         state3_next = (state1==estado1)?estado4:estado2;
@@ -170,7 +170,7 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         if(state1==INIT)
             contador1=19'd0;
         else 
-        begin
+        begin   
             contador1=(contador1_next>link1_4-19'd1)? 19'd0 : contador1_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
         end
     end
@@ -182,7 +182,14 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
             contador2=19'd0;
         else 
         begin
-            contador2=((contador2_next>(link2_4-19'd1) && (contador2_next[18]==1'b0)))? phi_cuentas : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            if(state3==estado4)
+            begin
+                contador2 = contador1;        
+            end 
+            else
+            begin
+                contador2 = ((contador2_next>(link2_4-19'd1) && (contador2_next[18]==1'b0)))? phi_cuentas : contador2_next+19'd1;//IMPORTANTE: arrreglar valor en el que se resetea
+            end
         end
     end
 
