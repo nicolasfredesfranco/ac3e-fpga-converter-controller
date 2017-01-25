@@ -39,6 +39,7 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
 
 
     reg [2:0] state1, state2, state1_next, state2_next;
+    reg [2:0] state3, state3_next;
     reg signed [18:0] contador1, contador2, contador1_next, contador2_next; //revisar numero de bits
     reg signed [18:0] tau1_cuentas, pi_cuentas, tau2_cuentas, phi_cuentas;
     reg signed [18:0] link1_1, link1_2, link1_3, link1_4, link2_1, link2_2, link2_3, link2_4; 
@@ -47,6 +48,7 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         begin
             state1=INIT;
             state2=INIT;
+            state3=INIT;//Nueva maquina diseñada para sincronizar las otras 2
         end
 
 
@@ -138,6 +140,30 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         endcase
 
 
+    always@(*)// maquina de estados para el voltaje V2
+        case(state3)
+        INIT:       begin 
+                        state3_next = ((state1==estado4) || (state2==estado4))?estado1:INIT;//preguntar como se hace el o
+                    end
+        estado1:    begin
+                        state3_next = (state2==estado1)?estado2:((state1==estado1)estado3:estado1);
+                    end
+        estado2:    begin
+                        state3_next = (state1==estado1)?estado4:estado2;
+                    end  
+        estado3:    begin
+                        state3_next = (state2==estado1)?estado4:estado3;
+                    end        
+        estado4:    begin
+                        state3_next = INIT;
+                    end    
+        default:    begin
+                        state3_next = INIT;
+                    end
+        endcase
+
+
+
 
     always@(*)
     begin
@@ -172,7 +198,10 @@ module top(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
     begin
         state1 <= state1_next;
         state2 <= state2_next;
+        state3 <= state3_next;
     end
+
+
 
 
 
