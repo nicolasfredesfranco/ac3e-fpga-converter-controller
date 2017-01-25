@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 ///////////////////////////////////////////////////////////////////////////////////
-module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
+module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     input clk; // implementar rst de emergencia  
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
@@ -36,7 +36,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
     localparam estado4 = 3'd4;
 
     output reg signed [1:0] V1, V2;  // dejar como variables internas despues 
-
+    output reg trigger; //para sincronizar al medir
 
     reg [2:0] state1, state2, state1_next, state2_next;
     reg [2:0] state3, state3_next;
@@ -207,7 +207,18 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2); //<3
         state2 <= state2_next;
         state3 <= state3_next;
     end
+ 
 
+    //----------- solo para ver en el ociloscopio 
+
+
+    always@(*)
+    begin
+        if(contador1_next<pi_cuentas)
+            trigger=1'b1;
+        else 
+            trigger=1'b0;  
+    end
 
 
 
