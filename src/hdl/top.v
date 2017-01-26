@@ -175,7 +175,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
         link1_1_next =  pi_cuentas - tau1_cuentas;
         link1_2_next = pi_cuentas;
         link1_3_next =  2*pi_cuentas - tau1_cuentas;
-        link1_4_next =  2*pi_cuentas;
+        link1_4_next =  2*pi_cuentas - 19'd1;
         link2_1_next = pi_cuentas + phi_cuentas - tau2_cuentas;
         link2_2_next = pi_cuentas + phi_cuentas;
         link2_3_next =  2*pi_cuentas + phi_cuentas - tau2_cuentas;

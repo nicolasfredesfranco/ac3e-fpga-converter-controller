@@ -106,17 +106,17 @@ module switch(clk, deadtime, V1, V2, Sp, Ss);
 	always@(*)// maquina de estados para el voltaje V2
         case(state2)
         estado_V1:    begin 
-                        state2_next = (V2==2'd0)? estado_1_0 :((V1==-2'd1)?estado_1_n1 : estado_V1);//ojo con la comparacion
+                        state2_next = (V2==2'd0)? estado_1_0 :((V2==-2'd1)?estado_1_n1 : estado_V1);//ojo con la comparacion
                     	contador2_next=8'd0;
                     	Ss=4'b1001;
                     end
         estado_V0:    begin
-                        state2_next = (V2==2'd1)? estado_0_1 :((V1==-2'd1)?estado_0_n1 : estado_V0);
+                        state2_next = (V2==2'd1)? estado_0_1 :((V2==-2'd1)?estado_0_n1 : estado_V0);
                     	contador2_next=8'd0;
                     	Ss=4'b0101;
                     end
         estado_Vn1:    begin
-                        state2_next = (V2==2'd0)? estado_n1_0 :((V1==2'd1)?estado_n1_1 : estado_Vn1);
+                        state2_next = (V2==2'd0)? estado_n1_0 :((V2==2'd1)?estado_n1_1 : estado_Vn1);
                     	contador2_next=8'd0;
                     	Ss=4'b0110;
                     end  
