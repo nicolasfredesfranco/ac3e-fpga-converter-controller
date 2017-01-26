@@ -54,31 +54,144 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
 
     // se procede a adaptar los inputs a numero de cuentas de reloj
 
+    wire div_tau1_valid;
+    wire div_tau2_valid;
+    wire div_phi_valid;
+    wire div_pi_valid;
+    wire [55:0] div_data_tau1;
+    wire [55:0] div_data_tau2;
+    wire [55:0] div_data_phi;
+    wire [55:0] div_data_pi;
+
+    wire signed [27:0] div_quo_tau1;  // Nota, verificar el tratamiento de datos con signo      
+    wire signed [27:0] div_quo_tau2;  // Nota, verificar el tratamiento de datos con signo      
+    wire signed [27:0] div_quo_phi;   // Nota, verificar el tratamiento de datos con signo  
+    wire signed [26:0] div_quo_pi;   // Nota, verificar el tratamiento de datos con signo  
+
+    assign div_quo_tau1 = div_data_tau1[51:24]; // [51:24]
+    assign div_quo_tau2 = div_data_tau2[51:24];
+    assign div_quo_phi = div_data_phi[51:24];
+    assign div_quo_pi  = div_data_pi [50:24];
+
+    reg signed [27:0] phi_cuentas_aux;
+    reg signed [27:0] phi_cuentas_aux_next;
+    reg signed [18:0] tau1_cuentas_next;
+    reg signed [27:0] tau1_cuentas_aux;
+    reg signed [27:0] tau1_cuentas_aux_next;
+    reg signed [18:0] pi_cuentas_next;
+    reg signed [18:0] tau2_cuentas_next;
+    reg signed [27:0] tau2_cuentas_aux;
+    reg signed [27:0] tau2_cuentas_aux_next;
+    reg signed [18:0] phi_cuentas_next;
+
     always@(*) //concatenacion de jaime para poder dividir (complemento a2)
     begin // 196_078 consutar referencia en verde
-        tau1_cuentas=({{10{t1[8]}},t1}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
-        pi_cuentas=50000000/fs_DAB; // el numero debe ser 5*10^7
-        tau2_cuentas=({{10{t2[8]}},t2}*196078)/fs_DAB;// OJO quizas la division genera problema de timing
+        tau1_cuentas_aux_next= (t1*196078);// OJO quizas la division genera problema de timing
+        tau1_cuentas_next = (div_tau1_valid) ? div_quo_tau1 : tau1_cuentas;
+        //tau1_cuentas_next=tau1_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
+        pi_cuentas_next=(div_pi_valid) ? div_quo_pi : pi_cuentas;// el numero debe ser 5*10^7
+        tau2_cuentas_aux_next= (t2*196078);// OJO quizas la division genera problema de timing
+        tau2_cuentas_next = (div_tau2_valid) ? div_quo_tau2 : tau2_cuentas;
+        //tau2_cuentas_next=tau2_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
         //phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
-        phi_cuentas=(phi*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
+        phi_cuentas_aux_next=phi*196078;// OJO quizas la division genera problema de timing;
+        phi_cuentas_next = (div_phi_valid) ? div_quo_phi : phi_cuentas;
+        //phi_cuentas_next=phi_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
+    always@(posedge clk) //concatenacion de jaime para poder dividir (complemento a2)
+    begin // 196_078 consutar referencia en verde
+        tau1_cuentas_aux <= tau1_cuentas_aux_next;
+        tau1_cuentas <= tau1_cuentas_next;
+        pi_cuentas <= pi_cuentas_next;
+        tau2_cuentas <= tau2_cuentas_next;
+        tau2_cuentas_aux <= tau2_cuentas_aux_next;
+        phi_cuentas <= phi_cuentas_next;
+        phi_cuentas_aux <= phi_cuentas_aux_next;
+    end
+
+    div_gen_v4_0_0 DivTau1 (
+      .aclk(clk),                                           // input aclk
+      .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
+      .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
+      .s_axis_divisor_tdata({{5{fs_DAB[18]}},fs_DAB}),      // input [23 : 0] s_axis_divisor_tdata
+      .s_axis_dividend_tvalid(1'b1),                        // input s_axis_dividend_tvalid
+      .s_axis_dividend_tready(),                            // output s_axis_dividend_tready
+      .s_axis_dividend_tdata({{4{tau1_cuentas_aux[27]}},tau1_cuentas_aux}),      // input [31 : 0] s_axis_dividend_tdata
+      .m_axis_dout_tvalid(div_tau1_valid),                  // output m_axis_dout_tvalid
+      .m_axis_dout_tdata(div_data_tau1)                     // output [55 : 0] m_axis_dout_tdata
+    );
     
+    div_gen_v4_0_0 DivTau2 (
+      .aclk(clk),                                           // input aclk
+      .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
+      .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
+      .s_axis_divisor_tdata({{5{fs_DAB[18]}},fs_DAB}),      // input [23 : 0] s_axis_divisor_tdata
+      .s_axis_dividend_tvalid(1'b1),                        // input s_axis_dividend_tvalid
+      .s_axis_dividend_tready(),                            // output s_axis_dividend_tready
+      .s_axis_dividend_tdata({{4{tau2_cuentas_aux[27]}},tau2_cuentas_aux}),              // input [31 : 0] s_axis_dividend_tdata
+      .m_axis_dout_tvalid(div_tau2_valid),                  // output m_axis_dout_tvalid
+      .m_axis_dout_tdata(div_data_tau2)                     // output [55 : 0] m_axis_dout_tdata
+    );
+    
+    div_gen_v4_0_0 DivPhi (
+      .aclk(clk),                                           // input aclk
+      .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
+      .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
+      .s_axis_divisor_tdata({{5{fs_DAB[18]}},fs_DAB}),      // input [23 : 0] s_axis_divisor_tdata
+      .s_axis_dividend_tvalid(1'b1),                        // input s_axis_dividend_tvalid
+      .s_axis_dividend_tready(),                            // output s_axis_dividend_tready
+      .s_axis_dividend_tdata({{4{phi_cuentas_aux[27]}},phi_cuentas_aux}),           // input [31 : 0] s_axis_dividend_tdata
+      .m_axis_dout_tvalid(div_phi_valid),                   // output m_axis_dout_tvalid
+      .m_axis_dout_tdata(div_data_phi)                      // output [55 : 0] m_axis_dout_tdata
+    );
+
+    div_gen_v4_0_1_pi DivPi (
+      .aclk(clk),                                           // input aclk
+      .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
+      .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
+      .s_axis_divisor_tdata({{5{fs_DAB[18]}},fs_DAB}),      // input [23 : 0] s_axis_divisor_tdata
+      .s_axis_dividend_tvalid(1'b1),                        // input s_axis_dividend_tvalid
+      .s_axis_dividend_tready(),                            // output s_axis_dividend_tready
+      .s_axis_dividend_tdata(32'd50000000),                 // input [31 : 0] s_axis_dividend_tdata
+      .m_axis_dout_tvalid(div_pi_valid),                    // output m_axis_dout_tvalid
+      .m_axis_dout_tdata(div_data_pi)                       // output [55 : 0] m_axis_dout_tdata
+    );
+
 
     //se definen los valores de transicion entre estados (numero de cuentas)
 
+    reg signed [18:0] link1_1_next;
+    reg signed [18:0] link1_2_next;
+    reg signed [18:0] link1_3_next;
+    reg signed [18:0] link1_4_next;
+    reg signed [18:0] link2_1_next;
+    reg signed [18:0] link2_2_next;
+    reg signed [18:0] link2_3_next;
+    reg signed [18:0] link2_4_next;
+
     always@(*) 
     begin 
-        link1_1 =  pi_cuentas - tau1_cuentas;
-        link1_2 = pi_cuentas;
-        link1_3 =  2*pi_cuentas - tau1_cuentas;
-        link1_4 =  2*pi_cuentas;
-        link2_1 = pi_cuentas + phi_cuentas - tau2_cuentas;
-        link2_2 = pi_cuentas + phi_cuentas;
-        link2_3 =  2*pi_cuentas + phi_cuentas - tau2_cuentas;
-        link2_4 =  2*pi_cuentas + phi_cuentas;
+        link1_1_next =  pi_cuentas - tau1_cuentas;
+        link1_2_next = pi_cuentas;
+        link1_3_next =  2*pi_cuentas - tau1_cuentas;
+        link1_4_next =  2*pi_cuentas;
+        link2_1_next = pi_cuentas + phi_cuentas - tau2_cuentas;
+        link2_2_next = pi_cuentas + phi_cuentas;
+        link2_3_next =  2*pi_cuentas + phi_cuentas - tau2_cuentas;
+        link2_4_next =  2*pi_cuentas + phi_cuentas;
     end
 
+    always @(posedge clk) begin
+        link1_1 <= link1_1_next;
+        link1_2 <= link1_2_next;
+        link1_3 <= link1_3_next;
+        link1_4 <= link1_4_next;
+        link2_1 <= link2_1_next;
+        link2_2 <= link2_2_next;
+        link2_3 <= link2_3_next;
+        link2_4 <= link2_4_next;
+    end
 
 
 
@@ -226,3 +339,4 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
 
 
 endmodule
+
