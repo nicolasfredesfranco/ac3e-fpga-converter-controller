@@ -19,7 +19,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, trigger); //<3
+module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, trigger, clk2); //<3
     input clk; // implementar rst de emergencia  
     /*input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
@@ -32,11 +32,14 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
     output [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
     output [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)
     output trigger;
+    output clk2;
+
+    assign clk2 = clk;
     
     /////////////////////	
     reg signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     reg signed [8:0] phi; //se entrega entre -255 y 255
-    reg signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000 
+    reg signed [18:0] fs_DAB;// aguanta entre 500Hz y 250KHz 
     reg [7:0] deadtime;
     ///////////mode 1
 
@@ -45,16 +48,16 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
     	if (switch) begin
     		t1 = 9'd223; //CORRESPONDE A 7PI/8
 			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = -9'd32; //CORRESPONDE A -PI/8
+			phi = -9'd255; //CORRESPONDE A -PI/8
     		fs_DAB = 19'd100000; // OPERANDO A 100KHz
-    		deadtime=8'd20; //equivale a 200ns
+    		deadtime=8'd5; //equivale a 200ns
     	end
     	else begin
     		t1 = 9'd223; //CORRESPONDE A 7PI/8
 			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = 9'd64; //CORRESPONDE A -PI/8
-    		fs_DAB = 19'd150000; // OPERANDO A 100KHz
-    		deadtime=8'd20;
+			phi = 9'd255; //CORRESPONDE A -PI/8
+    		fs_DAB = 19'd100000; // OPERANDO A 100KHz
+    		deadtime=8'd5;
     		
     	end
     end
@@ -80,7 +83,7 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
 
     always @(posedge clk) 
     begin
-    	t1_sinc <= t1;
+    	t1_sinc <= t1;// se supone que puedo hacer t1, t2 y phi, sincronico a mi trigger 
     	t2_sinc <= t2;
     	phi_sinc <= phi;
     	fs_DAB_sinc <= fs_DAB;
