@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: AC3E
+// Engineer: Nicolas I. Fredes Franco
 // 
 // Create Date:    14:53:16 01/25/2017 
 // Design Name: 
@@ -17,7 +17,10 @@
 
 // Revision 0.01 - File Created
 // Additional Comments: 
-//
+//                      -IMPORTANTE, el valor maximo para phi es tau2-tau1+pi radianes, si se la mete mas que eso se satura en el mismo valor.
+//                      -El valor minimo de fs_DAB es 500 y el maximo 250_000
+//                      -Valor minimo de deadtime es 1
+//                      -Ojo con la saturacion de valores negativos
 //////////////////////////////////////////////////////////////////////////////////
 module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, trigger, clk2); //<3
     input clk; // implementar rst de emergencia  
@@ -48,16 +51,16 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
     	if (switch) begin
     		t1 = 9'd223; //CORRESPONDE A 7PI/8
 			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = -9'd255; //CORRESPONDE A -PI/8
+			phi = 9'd255; //CORRESPONDE A -PI/8
     		fs_DAB = 19'd100000; // OPERANDO A 100KHz
-    		deadtime=8'd5; //equivale a 200ns
+    		deadtime=8'd20; //equivale a 200ns
     	end
     	else begin
     		t1 = 9'd223; //CORRESPONDE A 7PI/8
 			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = 9'd255; //CORRESPONDE A -PI/8
+			phi = -9'd64; //CORRESPONDE A -PI/8
     		fs_DAB = 19'd100000; // OPERANDO A 100KHz
-    		deadtime=8'd5;
+    		deadtime=8'd20;
     		
     	end
     end
@@ -83,14 +86,38 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
 
     always @(posedge clk) 
     begin
-    	t1_sinc <= t1;// se supone que puedo hacer t1, t2 y phi, sincronico a mi trigger 
-    	t2_sinc <= t2;
-    	phi_sinc <= phi;
-    	fs_DAB_sinc <= fs_DAB;
-    	sync_sinc <= sync;
-    	deadtime_sinc <= deadtime;
+        fs_DAB_sinc <= fs_DAB;
+        sync_sinc <= sync;
+        deadtime_sinc <= deadtime;    
     end
 
+
+    ///// LIMITE DE SATURACION PARA PHI 
+    reg signed [8:0] limite;
+
+    always @(*)
+    begin
+        limite = t2 - t1 + 9'd255;
+    end
+    ///////////////
+
+
+
+    always @(posedge trigger) 
+    begin
+        if (limite >= phi)  
+        begin
+            t1_sinc <= t1;// se supone que puedo hacer t1, t2 y phi, sincronico a mi trigger 
+            t2_sinc <= t2;
+            phi_sinc <= phi;
+        end
+        else 
+        begin
+            t1_sinc <= t1;// se supone que puedo hacer t1, t2 y phi, sincronico a mi trigger 
+            t2_sinc <= t2;
+            phi_sinc <= limite;             
+        end
+    end
  
  
     voltajes signals(clk/*, rst*/, t1_sinc, t2_sinc, phi_sinc, fs_DAB_sinc, sync_sinc, V1, V2, trigger);
