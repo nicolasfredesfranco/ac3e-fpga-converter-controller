@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: AC3E
+// Engineer: Nicolas I. Fredes Franco
 // 
 // Create Date:    15:03:16 01/25/2017 
 // Design Name: 
