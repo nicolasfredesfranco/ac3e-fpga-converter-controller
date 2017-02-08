@@ -41,8 +41,15 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   reg calcular_sqrt1;  
   wire [31:0] sqrt1, v2_v1, fs_d, 4piL_fs_d, f5, f6;
 
-  wire rdy_f7, rdy_f8, rdy_tau1_modo2a, rdy_fs_v2_v1, rdy_f9, rdy_f10, rdy_tau2_modo2a;  
-  wire [31:0]  f7, f8, tau1_modo2a, fs_v2_v1, f9, f10, tau2_modo2a;
+  wire rdy_f7, rdy_f8, rdy_tau1_modo2a, rdy_fs_v2_v1, rdy_f9, rdy_f10, rdy_tau2_modo2a, rdy_f11, rdy_phi_modo2a;  
+  wire [31:0]  f7, f8, tau1_modo2a, fs_v2_v1, f9, f10, tau2_modo2a, f11, phi_modo2a;
+
+
+  wire [31:0] tau1_modo2b, tau1_modo1,tau1_modo1_d, tau1_modo2b_d, c2_fs, c2_fs_Vdc2p, tau2_modo1, tau2_modo2b;
+  wire rdy_tau1_modo1_d, rdy_tau1_modo2b_d, rdy_c2_fs, rdy_c2_fs_Vdc2p, rdy_tau2_modo1, rdy_tau2_modo2b;
+
+  wire rdy_2pi2L_fs, rdy_2pi2L_fs_Iref, rdy_Vdc2p_tau2_modo2b, rdy_f12, rdy_f13, rdy_phi_modo2b;
+  wire [31:0] 2pi2L_fs, 2pi2L_fs_Iref, Vdc2p_tau2_modo2b, f12, f13, phi_modo2b;
 
   localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
   localparam razon_vueltas_inv= 32'b00111110001110100010111010001100;  // (n2/n1)
@@ -52,6 +59,13 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   localparam uno=32'b00111111100000000000000000000000;  // 1 en float
   localparam 4piL=32'b00111001101001001011010110111110; //4*pi*L
   localparam Ipc=32'b01000000000000000000000000000000; //2 en float 
+  localparam c1=32'b10111001110000101010100000111110; //c1 =  -2 pi * L * (Ipc + Isc*n2/n1)
+  localparam pi=32'b01000000010010010000111111011011; //pi en float 
+  localparam c2=32'b10111010001001001011010110111110; //c2= -4pi*L*Ipc
+  localparam 2pi2L=32'b00111010000000010101110011100110; //2 pi^2 * L
+  localparam menos_pi_medio=32'b10111111110010010000111111011011; //-pi/2
+
+
   /////////////////////Paso de las entradas a float
 
 
@@ -364,22 +378,147 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_tau2_modo2a) // output rdy
 );
 
+multiply_float calculo_Vdc2p (
+  .a(c1), // input [31 : 0] a
+  .b(fs_float), // input [31 : 0] b
+  .operation_nd(rdy_fs), // input operation_nd
+  .clk(clk), // input clk
+  .result(f11), // 
+  .rdy(rdy_f11) // output rdy
+);
+
+Divide_float your_instance_name (
+  .a(f11), // input [31 : 0] a
+  .b(Vdc1_float_adap), // input [31 : 0] b
+  .operation_nd(rdy_f11), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2a), // output [31 : 0] result
+  .rdy(rdy_phi_modo2a) // output rdy
+);
+
+////////////////////////
 
 
+assign tau1_modo2b = pi;
+assign tau1_modo1  = pi;
+
+Divide_float your_instance_name (
+  .a(tau1_modo2b), // input [31 : 0] a
+  .b(d), // input [31 : 0] b
+  .operation_nd(rdy_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau1_modo2b_d), // output [31 : 0] result
+  .rdy(rdy_tau1_modo2b_d) // output rdy
+);
 
 
+Divide_float your_instance_name (
+  .a(tau1_modo1), // input [31 : 0] a
+  .b(d), // input [31 : 0] b
+  .operation_nd(rdy_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau1_modo1_d), // output [31 : 0] result
+  .rdy(rdy_tau1_modo1_d) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(c2), // input [31 : 0] a
+  .b(fs_float), // input [31 : 0] b
+  .operation_nd(rdy_fs), // input operation_nd
+  .clk(clk), // input clk
+  .result(c2_fs), // 
+  .rdy(rdy_c2_fs) // output rdy
+);
+
+Divide_float your_instance_name (
+  .a(c2_fs), // input [31 : 0] a
+  .b(Vdc2p), // input [31 : 0] b
+  .operation_nd(rdy_Vdc2p), // input operation_nd
+  .clk(clk), // input clk
+  .result(c2_fs_Vdc2p), // output [31 : 0] result
+  .rdy(rdy_c2_fs_Vdc2p) // output rdy
+);
 
 
+//tau2_modo2b
+suma_float your_instance_name (
+  .a(tau1_modo2b_d), // input [31 : 0] a
+  .b(c2_fs_Vdc2p), // input [31 : 0] b
+  .operation_nd(rdy_tau1_modo2b_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2b), // output [31 : 0] result
+  .rdy(rdy_tau2_modo2b) // output rdy
+);
 
 
+//tau2_modo1
+suma_float your_instance_name (
+  .a(tau1_modo1_d), // input [31 : 0] a
+  .b(c2_fs_Vdc2p), // input [31 : 0] b
+  .operation_nd(rdy_tau1_modo1_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo1), // output [31 : 0] result
+  .rdy(rdy_tau2_modo1) // output rdy
+);
 
 
+//////
+
+multiply_float calculo_Vdc2p (
+  .a(2pi2L), // input [31 : 0] a
+  .b(fs_float), // input [31 : 0] b
+  .operation_nd(rdy_fs), // input operation_nd
+  .clk(clk), // input clk
+  .result(2pi2L_fs), // 
+  .rdy(rdy_2pi2L_fs) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(2pi2L_fs), // input [31 : 0] a
+  .b(Iref_float_adap), // input [31 : 0] b
+  .operation_nd(rdy_2pi2L_fs), // input operation_nd
+  .clk(clk), // input clk
+  .result(2pi2L_fs_Iref), // 
+  .rdy(rdy_2pi2L_fs_Iref) // output rdy
+);
 
 
+multiply_float calculo_Vdc2p (
+  .a(Vdc2p), // input [31 : 0] a
+  .b(tau2_modo2b), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(Vdc2p_tau2_modo2b), // 
+  .rdy(rdy_Vdc2p_tau2_modo2b) // output rdy
+);
 
 
+Divide_float your_instance_name (
+  .a(2pi2L_fs_Iref), // input [31 : 0] a
+  .b(Vdc2p_tau2_modo2b), // input [31 : 0] b
+  .operation_nd(rdy_Vdc2p_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(f12), // output [31 : 0] result
+  .rdy(rdy_f12) // output rdy
+);
 
+suma_float your_instance_name (
+  .a(f12), // input [31 : 0] a
+  .b(menos_pi_medio), // input [31 : 0] b
+  .operation_nd(rdy_f12), // input operation_nd
+  .clk(clk), // input clk
+  .result(f13), // output [31 : 0] result
+  .rdy(rdy_f13) // output rdy
+);
 
+Divide_float your_instance_name (
+  .a(tau2_modo2b), // input [31 : 0] a
+  .b(dos), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2b), // output [31 : 0] result
+  .rdy(rdy_phi_modo2b) // output rdy
+);
 
 
 endmodule
