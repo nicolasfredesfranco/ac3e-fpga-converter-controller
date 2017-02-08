@@ -38,7 +38,7 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
 
 
   wire aux1_positivo, rdy_comparacion1, invalid_op1, rdy_sqrt1, rdy_v2_v1, rdy_fs_d, rdy_4piL_fs_d, rdy_f5, rdy_f6;
-  reg calcular_sqrt1;  
+  reg calcular_sqrt1, calcular_sqrt2;  
   wire [31:0] sqrt1, v2_v1, fs_d, 4piL_fs_d, f5, f6;
 
   wire rdy_f7, rdy_f8, rdy_tau1_modo2a, rdy_fs_v2_v1, rdy_f9, rdy_f10, rdy_tau2_modo2a, rdy_f11, rdy_phi_modo2a;  
@@ -50,6 +50,16 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
 
   wire rdy_2pi2L_fs, rdy_2pi2L_fs_Iref, rdy_Vdc2p_tau2_modo2b, rdy_f12, rdy_f13, rdy_phi_modo2b;
   wire [31:0] 2pi2L_fs, 2pi2L_fs_Iref, Vdc2p_tau2_modo2b, f12, f13, phi_modo2b;
+
+
+  wire [31:0] h1, h2, h3, h4, h5, h6, aux2, menos_2pi2L_fs, menos_2pi2L_fs_Iref;
+  wire rdy_h1, rdy_h2, rdy_h3, rdy_h4, rdy_h5, rdy_h6, rdy_aux2, rdy_menos_2pi2L_fs, rdy_menos_2pi2L_fs_Iref;
+
+
+  wire aux2_positivo, rdy_comparacion2, invalid_op2, rdy_sqrt2, rdy_tau2_modo1_dos, rdy_phi_modo1;
+  wire [31:0] sqrt2, tau2_modo1_dos, phi_modo1;
+
+
 
   localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
   localparam razon_vueltas_inv= 32'b00111110001110100010111010001100;  // (n2/n1)
@@ -557,7 +567,7 @@ multiply_float calculo_Vdc2p (
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
   .clk(clk), // input clk
-  .result(menos_2pi2L_fs), // 
+  .result(menos_2pi2L_fs), // ssss
   .rdy(rdy_menos_2pi2L_fs) // output rdy
 );
 
@@ -609,6 +619,55 @@ suma_float your_instance_name (
 
 ///////////////////que hacer con aux2?
 
+mayor_igual_float your_instance_name (
+  .a(aux2), // input [31 : 0] a
+  .b(32'b0), // input [31 : 0] b
+  .operation_nd(rdy_aux2), // input operation_nd
+  .clk(clk), // input clk
+  .result(aux2_positivo), // output [0 : 0] result
+  .rdy(rdy_comparacion2) // output rdy
+);
+  
+
+always @(*)
+begin
+  if (aux2_positivo && rdy_comparacion2) // se deduce que modo1=aux2_positivo
+  begin
+    calcular_sqrt2 = 1'b1;
+  end
+  else 
+  begin
+    calcular_sqrt2 = 1'b0;
+  end
+end
+
+  // raiz de aux
+  sqrt_float your_instance_name (
+  .a(aux2), // input [31 : 0] a
+  .operation_nd(calcular_sqrt2), // input operation_nd
+  .clk(clk), // input clk
+  .result(sqrt2), // output [31 : 0] result
+  .invalid_op(invalid_op2), // output invalid_op
+  .rdy(rdy_sqrt2) // output rdy
+);
+
+Divide_float your_instance_name (
+  .a(tau2_modo1), // input [31 : 0] a
+  .b(dos), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo1_dos), // output [31 : 0] result
+  .rdy(rdy_tau2_modo1_dos) // output rdy
+);
+
+resta_float your_instance_name (
+  .a(tau2_modo1_dos), // input [31 : 0] a
+  .b(sqrt2), // input [31 : 0] b
+  .operation_nd(rdy_sqrt2), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo1), // output [31 : 0] result
+  .rdy(rdy_phi_modo1) // output rdy
+);
 
 
 
