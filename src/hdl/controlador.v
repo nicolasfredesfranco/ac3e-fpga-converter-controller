@@ -21,73 +21,79 @@
 
 
 module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
-	input clk, trigger;
-	input signed [13:0] Vdc1, Vdc2, Iref;
-	input signed [18:0] fs_DAB;
-	output reg signed [8:0] tau1, tau2, phi;
+  input clk, trigger;
+  input signed [13:0] Vdc1, Vdc2, Iref;
+  input signed [18:0] fs_DAB;
+  output reg signed [8:0] tau1, tau2, phi;
 
-	wire [31:0] Vdc1_float, Vdc2_float, Iref_float, fs_float;
-	wire rdy_Vdc1, rdy_Vdc2, rdy_Iref, rdy_fs;
+  wire [31:0] Vdc1_float, Vdc2_float, Iref_float, fs_float;
+  wire rdy_Vdc1, rdy_Vdc2, rdy_Iref, rdy_fs;
 
-	wire [31:0] Vdc1_float_adap, Vdc2_float_adap, Iref_float_adap;
-	wire rdy_Vdc1_adap, rdy_Vdc2_adap, rdy_Iref_adap;
-
-
-	wire [31:0] Vdc2p, d, f2_Iref, f2_Iref_Vdc1, f3, d_inv, uno_d_inv, f4, aux1;
-	wire rdy_Vdc2p, rdy_d, rdy_f2_Iref, rdy_f2_Iref_Vdc1, rdy_f3, rdy_d_inv, rdy_uno_d_inv, rdy_f4, rdy_aux1;
+  wire [31:0] Vdc1_float_adap, Vdc2_float_adap, Iref_float_adap;
+  wire rdy_Vdc1_adap, rdy_Vdc2_adap, rdy_Iref_adap;
 
 
-	wire aux1_positivo, rdy_comparacion1;
-	reg calcular_sqrt;	
+  wire [31:0] Vdc2p, d, f2_Iref, f2_Iref_Vdc1, f3, d_inv, uno_d_inv, f4, aux1;
+  wire rdy_Vdc2p, rdy_d, rdy_f2_Iref, rdy_f2_Iref_Vdc1, rdy_f3, rdy_d_inv, rdy_uno_d_inv, rdy_f4, rdy_aux1;
 
 
-	localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
-	localparam L=32'b00110111110100011011011100010111;
-	localparam f1=32'b00111101000001110110011110111000; // ((n2/n1)^2 /4) * Isc^2
-	localparam f2=32'b01000110000111000100000000000000; // (1/(4L))
-	localparam uno=32'b00111111100000000000000000000000;  // 1 en float
-	/////////////////////Paso de las entradas a float
+  wire aux1_positivo, rdy_comparacion1, invalid_op1, rdy_sqrt1, rdy_v2_v1, rdy_fs_d, rdy_4piL_fs_d, rdy_f5, rdy_f6;
+  reg calcular_sqrt1;  
+  wire [31:0] sqrt1, v2_v1, fs_d, 4piL_fs_d, f5, f6;
+
+  wire rdy_f7, rdy_f8, rdy_tau1_modo2a, rdy_fs_v2_v1, rdy_f9, rdy_f10, rdy_tau2_modo2a;  
+  wire [31:0]  f7, f8, tau1_modo2a, fs_v2_v1, f9, f10, tau2_modo2a;
+
+  localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
+  localparam razon_vueltas_inv= 32'b00111110001110100010111010001100;  // (n2/n1)
+  localparam L=32'b00110111110100011011011100010111; //L
+  localparam f1=32'b00111101000001110110011110111000; // ((n2/n1)^2 /4) * Isc^2
+  localparam f2=32'b01000110000111000100000000000000; // (1/(4L))
+  localparam uno=32'b00111111100000000000000000000000;  // 1 en float
+  localparam 4piL=32'b00111001101001001011010110111110; //4*pi*L
+  localparam Ipc=32'b01000000000000000000000000000000; //2 en float 
+  /////////////////////Paso de las entradas a float
 
 
-	SInt13ToSingle float_vdc1 (
-	.a(Vdc1), // input [13 : 0] a
-	.clk(clk), // input clk
-	.result(Vdc1_float), // output [31 : 0] result
-	.rdy(rdy_Vdc1) // output rdy
-	);
+  SInt13ToSingle float_vdc1 (
+  .a(Vdc1), // input [13 : 0] a
+  .clk(clk), // input clk
+  .result(Vdc1_float), // output [31 : 0] result
+  .rdy(rdy_Vdc1) // output rdy
+  );
 
 
-	SInt13ToSingle float_vdc2 (
-	.a(Vdc2), // input [13 : 0] a
-	.clk(clk), // input clk
-	.result(Vdc2_float), // output [31 : 0] result
-	.rdy(rdy_Vdc2) // output rdy
-	);
+  SInt13ToSingle float_vdc2 (
+  .a(Vdc2), // input [13 : 0] a
+  .clk(clk), // input clk
+  .result(Vdc2_float), // output [31 : 0] result
+  .rdy(rdy_Vdc2) // output rdy
+  );
 
 
-	SInt13ToSingle float_iref (
-	.a(Iref), // input [13 : 0] a
-	.clk(clk), // input clk
-	.result(Iref_float), // output [31 : 0] result
-	.rdy(rdy_Iref) // output rdy
-	);
+  SInt13ToSingle float_iref (
+  .a(Iref), // input [13 : 0] a
+  .clk(clk), // input clk
+  .result(Iref_float), // output [31 : 0] result
+  .rdy(rdy_Iref) // output rdy
+  );
 
 
-	SInt18ToSingle float_fs (
+  SInt18ToSingle float_fs (
   .a(fs_DAB), // input [18 : 0] a
   .clk(clk), // input clk
   .result(fs_float), // output [31 : 0] result
   .rdy(rdy_fs) // output rdy
 );
 
-	////////////////////////adaptacion que supone unos voltajes de 0 a 1000, y una corriente de -50 a 50
+  ////////////////////////adaptacion que supone unos voltajes de 0 a 1000, y una corriente de -50 a 50
 
-	// (50/8192) = 00111011110010000000000000000000  en float32
+  // (50/8192) = 00111011110010000000000000000000  en float32
 
-	// (1000/8192) = 00111101111110100000000000000000  en float
+  // (1000/8192) = 00111101111110100000000000000000  en float
 
 
-	multiply_float adaptacion_Vdc1 (
+  multiply_float adaptacion_Vdc1 (
   .a(Vdc1_float), // input [31 : 0] a
   .b(32'b00111101111110100000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Vdc1), // input operation_nd
@@ -97,7 +103,7 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
 );
 
 
-	multiply_float adaptacion_Vdc2 (
+  multiply_float adaptacion_Vdc2 (
   .a(Vdc2_float), // input [31 : 0] a
   .b(32'b00111101111110100000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Vdc2), // input operation_nd
@@ -106,7 +112,7 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   .rdy(rdy_Vdc2_adap) // output rdy
 );
 
-	multiply_float adaptacion_Iref (
+  multiply_float adaptacion_Iref (
   .a(Iref_float), // input [31 : 0] a
   .b(32'b00111011110010000000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Iref), // input operation_nd
@@ -218,21 +224,163 @@ mayor_igual_float your_instance_name (
   .result(aux1_positivo), // output [0 : 0] result
   .rdy(rdy_comparacion1) // output rdy
 );
-
+  
 
 always @(*)
 begin
-	if (aux1_positivo and rdy_comparacion1)
-	begin
-		calcular_sqrt=1'b1;
-	end
-	else 
-	begin
-		calcular_sqrt=1'b0;
-	end
+  if (aux1_positivo && rdy_comparacion1) // se deduce que modo2a=aux1_positivo
+  begin
+    calcular_sqrt1 = 1'b1;
+  end
+  else 
+  begin
+    calcular_sqrt1 = 1'b0;
+  end
 end
+
+  // raiz de aux
+  sqrt_float your_instance_name (
+  .a(aux1), // input [31 : 0] a
+  .operation_nd(calcular_sqrt1), // input operation_nd
+  .clk(clk), // input clk
+  .result(sqrt1), // output [31 : 0] result
+  .invalid_op(invalid_op1), // output invalid_op
+  .rdy(rdy_sqrt1) // output rdy
+);
+
+
+resta_float your_instance_name (
+  .a(Vdc2p), // input [31 : 0] a
+  .b(Vdc1_float_adap), // input [31 : 0] b
+  .operation_nd(rdy_sqrt1), // input operation_nd
+  .clk(clk), // input clk
+  .result(v2_v1), // output [31 : 0] result
+  .rdy(rdy_v2_v1) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(fs_float), // input [31 : 0] a
+  .b(d), // input [31 : 0] b
+  .operation_nd(rdy_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(fs_d), // f2*Idcref
+  .rdy(rdy_fs_d) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(fs_d), // input [31 : 0] a
+  .b(4piL), // input [31 : 0] b
+  .operation_nd(rdy_fs_d), // input operation_nd
+  .clk(clk), // input clk
+  .result(4piL_fs_d), // 
+  .rdy(rdy_4piL_fs_d) // output rdy
+);
+
+//f5
+Divide_float your_instance_name (
+  .a(4piL_fs_d), // input [31 : 0] a
+  .b(v2_v1), // input [31 : 0] b
+  .operation_nd(rdy_v2_v1), // input operation_nd
+  .clk(clk), // input clk
+  .result(f5), // output [31 : 0] result
+  .rdy(rdy_f5) // output rdy
+);
+
+
+//Ipc *(1- (1/d))
+multiply_float calculo_Vdc2p (
+  .a(Ipc), // input [31 : 0] a
+  .b(uno_d_inv), // input [31 : 0] b
+  .operation_nd(rdy_uno_d_inv), // input operation_nd
+  .clk(clk), // input clk
+  .result(f6), // 
+  .rdy(rdy_f6) // output rdy
+);
+
+suma_float your_instance_name (
+  .a(f6), // input [31 : 0] a
+  .b(razon_vueltas_inv), // input [31 : 0] b
+  .operation_nd(rdy_f6), // input operation_nd
+  .clk(clk), // input clk
+  .result(f7), // output [31 : 0] result
+  .rdy(rdy_f7) // output rdy
+);
+
+
+suma_float your_instance_name (
+  .a(f7), // input [31 : 0] a
+  .b(sqrt1), // input [31 : 0] b
+  .operation_nd(rdy_sqrt1), // input operation_nd
+  .clk(clk), // input clk
+  .result(f8), // output [31 : 0] result
+  .rdy(rdy_f8) // output rdy
+);
+
+
+multiply_float calculo_Vdc2p (
+  .a(f5), // input [31 : 0] a
+  .b(f8), // input [31 : 0] b
+  .operation_nd(rdy_f5), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau1_modo2a), // 
+  .rdy(rdy_tau1_modo2a) // output rdy
+);
+
+
+Divide_float your_instance_name (
+  .a(fs_float), // input [31 : 0] a
+  .b(v2_v1), // input [31 : 0] b
+  .operation_nd(rdy_v2_v1), // input operation_nd
+  .clk(clk), // input clk
+  .result(fs_v2_v1), // output [31 : 0] result
+  .rdy(rdy_fs_v2_v1) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(fs_v2_v1), // input [31 : 0] a
+  .b(4piL), // input [31 : 0] b
+  .operation_nd(rdy_fs_v2_v1), // input operation_nd
+  .clk(clk), // input clk
+  .result(f9), // 
+  .rdy(rdy_f9) // output rdy
+);
+
+suma_float your_instance_name (
+  .a(sqrt1), // input [31 : 0] a
+  .b(razon_vueltas_inv), // input [31 : 0] b
+  .operation_nd(rdy_sqrt1), // input operation_nd
+  .clk(clk), // input clk
+  .result(f10), // output [31 : 0] result
+  .rdy(rdy_f10) // output rdy
+);
+
+
+multiply_float calculo_Vdc2p (
+  .a(f9), // input [31 : 0] a
+  .b(f10), // input [31 : 0] b
+  .operation_nd(rdy_f9), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2a), // 
+  .rdy(rdy_tau2_modo2a) // output rdy
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 endmodule
+  
