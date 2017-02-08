@@ -523,6 +523,95 @@ Divide_float your_instance_name (
   .rdy(rdy_phi_modo2b) // output rdy
 );
 
+////////////////// aux2   referencia en amarillo
+
+multiply_float calculo_Vdc2p (
+  .a(menos_1cuarto), // input [31 : 0] a
+  .b(tau2_modo1), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(h1), // 
+  .rdy(rdy_h1) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(h1), // input [31 : 0] a
+  .b(tau2_modo1), // input [31 : 0] b
+  .operation_nd(rdy_h1), // input operation_nd
+  .clk(clk), // input clk
+  .result(h2), // 
+  .rdy(rdy_h2) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(pi_medio), // input [31 : 0] a
+  .b(tau2_modo1), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(h3), // 
+  .rdy(rdy_h3) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(menos_2pi2L), // input [31 : 0] a
+  .b(fs_float), // input [31 : 0] b
+  .operation_nd(rdy_fs), // input operation_nd
+  .clk(clk), // input clk
+  .result(menos_2pi2L_fs), // 
+  .rdy(rdy_menos_2pi2L_fs) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(menos_2pi2L_fs), // input [31 : 0] a
+  .b(Iref_float_adap), // input [31 : 0] b
+  .operation_nd(rdy_Iref_adap), // input operation_nd
+  .clk(clk), // input clk
+  .result(menos_2pi2L_fs_Iref), // 
+  .rdy(rdy_menos_2pi2L_fs_Iref) // output rdy
+);
+
+Divide_float your_instance_name (
+  .a(menos_2pi2L_fs_Iref), // input [31 : 0] a
+  .b(Vdc2p), // input [31 : 0] b
+  .operation_nd(rdy_menos_2pi2L_fs_Iref), // input operation_nd
+  .clk(clk), // input clk
+  .result(h4), // output [31 : 0] result
+  .rdy(rdy_h4) // output rdy
+);
+
+suma_float your_instance_name (
+  .a(h2), // input [31 : 0] a
+  .b(menos_pi2_cuarto), // input [31 : 0] b
+  .operation_nd(rdy_h2), // input operation_nd
+  .clk(clk), // input clk
+  .result(h5), // output [31 : 0] result
+  .rdy(rdy_h5) // output rdy
+);
+
+
+suma_float your_instance_name (
+  .a(h3), // input [31 : 0] a
+  .b(h5), // input [31 : 0] b
+  .operation_nd(rdy_h5), // input operation_nd
+  .clk(clk), // input clk
+  .result(h6), // output [31 : 0] result
+  .rdy(rdy_h6) // output rdy
+);
+
+suma_float your_instance_name (
+  .a(h6), // input [31 : 0] a
+  .b(h4), // input [31 : 0] b
+  .operation_nd(rdy_h6), // input operation_nd
+  .clk(clk), // input clk
+  .result(aux2), // output [31 : 0] result
+  .rdy(rdy_aux2) // output rdy
+);
+
+///////////////////que hacer con aux2?
+
+
+
+
 
 endmodule
   
