@@ -60,6 +60,13 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   wire [31:0] sqrt2, tau2_modo1_dos, phi_modo1;
 
 
+  wire rdy_tau1_modo2a_esc, rdy_tau2_modo2a_esc, rdy_tau2_modo2b_esc, rdy_tau2_modo1_esc, rdy_phi_modo2a_esc, rdy_phi_modo2b_esc, rdy_phi_modo1_esc;
+  wire [31:0] tau1_modo2a_esc, tau2_modo2a_esc, tau2_modo2b_esc, tau2_modo1_esc, phi_modo2a_esc, phi_modo2b_esc, phi_modo1_esc;
+
+
+  wire rdy_tau1_modo2a_final, rdy_tau2_modo2a_final, rdy_tau2_modo2b_final, rdy_tau2_modo1_final, rdy_phi_modo2a_final, rdy_phi_modo2b_final, rdy_phi_modo1_final;
+  wire signed [8:0] tau1_modo2a_final, tau2_modo2a_final, tau2_modo2b_final, tau2_modo1_final, phi_modo2a_final, phi_modo2b_final, phi_modo1_final;
+
 
   localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
   localparam razon_vueltas_inv= 32'b00111110001110100010111010001100;  // (n2/n1)
@@ -78,6 +85,9 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   localparam menos_pi_medio=32'b10111111110010010000111111011011; //-pi/2
   localparam menos_1cuarto=32'b10111110100000000000000000000000; // -1/4
   localparam menos_pi2_cuarto= 32'b11000000000111011110100111100110; // - pi^2 /4
+  localparam escalado = 32'b01000010101000100101011010001010; // 255/pi
+
+
 
   /////////////////////Paso de las entradas a float
 
@@ -669,6 +679,89 @@ resta_float your_instance_name (
   .rdy(rdy_phi_modo1) // output rdy
 );
 
+
+////////////////////// RE ADAPTAR
+
+
+multiply_float calculo_Vdc2p (
+  .a(tau1_modo2a), // input [31 : 0] a
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_tau1_modo2a), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau1_modo2a_esc), // 
+  .rdy(rdy_tau1_modo2a_esc) // output rdy
+);
+
+
+
+
+
+
+multiply_float calculo_Vdc2p (
+  .a(tau2_modo2a), // input [31 : 0] a
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo2a), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2a_esc), // 
+  .rdy(rdy_tau2_modo2a_esc) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(tau2_modo2b), // input [31 : 0] a
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2b_esc), // 
+  .rdy(rdy_tau2_modo2b_esc) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(tau2_modo1), // input [31 : 0] a
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo1_esc), // 
+  .rdy(rdy_tau2_modo1_esc) // output rdy
+);
+
+
+
+
+
+
+
+
+
+
+multiply_float calculo_Vdc2p (
+  .a(phi_modo2a), // input [31 : 0] sd
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_phi_modo2a), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2a_esc), // 
+  .rdy(rdy_phi_modo2a_esc) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(phi_modo2b), // input [31 : 0] sd
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_phi_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2b_esc), // 
+  .rdy(rdy_phi_modo2b_esc) // output rdy
+);
+
+multiply_float calculo_Vdc2p (
+  .a(phi_modo1), // input [31 : 0] sd
+  .b(escalado), // input [31 : 0] b
+  .operation_nd(rdy_phi_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo1_esc), // 
+  .rdy(rdy_phi_modo1_esc) // output rdy
+);
+
+
+/////////
 
 
 
