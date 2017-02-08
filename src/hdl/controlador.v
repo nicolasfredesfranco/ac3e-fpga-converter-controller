@@ -63,8 +63,11 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
   localparam pi=32'b01000000010010010000111111011011; //pi en float 
   localparam c2=32'b10111010001001001011010110111110; //c2= -4pi*L*Ipc
   localparam 2pi2L=32'b00111010000000010101110011100110; //2 pi^2 * L
+  localparam menos_2pi2L=32'b10111010000000010101110011100110; //-2 pi^2 * L
+  localparam pi_medio=32'b00111111110010010000111111011011; //pi/2
   localparam menos_pi_medio=32'b10111111110010010000111111011011; //-pi/2
-
+  localparam menos_1cuarto=32'b10111110100000000000000000000000; // -1/4
+  localparam menos_pi2_cuarto= 32'b11000000000111011110100111100110; // - pi^2 /4
 
   /////////////////////Paso de las entradas a float
 
