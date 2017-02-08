@@ -37,6 +37,8 @@ module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
 	wire rdy_Vdc2p, rdy_d, rdy_f2_Iref, rdy_f2_Iref_Vdc1, rdy_f3, rdy_d_inv, rdy_uno_d_inv, rdy_f4, rdy_aux1;
 
 
+	wire aux1_positivo, rdy_comparacion1;
+	reg calcular_sqrt;	
 
 
 	localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
@@ -207,5 +209,30 @@ suma_float your_instance_name (
 );
 
 /////////////////////// que hacer con aux1? 
+
+mayor_igual_float your_instance_name (
+  .a(aux1), // input [31 : 0] a
+  .b(32'b0), // input [31 : 0] b
+  .operation_nd(rdy_aux1), // input operation_nd
+  .clk(clk), // input clk
+  .result(aux1_positivo), // output [0 : 0] result
+  .rdy(rdy_comparacion1) // output rdy
+);
+
+
+always @(*)
+begin
+	if (aux1_positivo and rdy_comparacion1)
+	begin
+		calcular_sqrt=1'b1;
+	end
+	else 
+	begin
+		calcular_sqrt=1'b0;
+	end
+end
+
+
+
 
 endmodule
