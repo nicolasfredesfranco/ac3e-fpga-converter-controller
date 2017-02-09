@@ -20,9 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
   input clk;
-  //input trigger;
+  input trigger;
   input signed [13:0] Vdc1, Vdc2, Iref;
   input signed [18:0] fs_DAB;
   output reg signed [8:0] tau1, tau2, phi;
@@ -39,9 +39,9 @@ module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi,
   wire rdy_Vdc2p, rdy_d, rdy_f2_Iref, rdy_f2_Iref_Vdc1, rdy_f3, rdy_d_inv, rdy_uno_d_inv, rdy_f4, rdy_aux1;
 
 
-  wire aux1_positivo, rdy_comparacion1, invalid_op1, rdy_sqrt1, rdy_v2_v1, rdy_fs_d, rdy_4piL_fs_d, rdy_f5, rdy_f6;
+  wire aux1_positivo, rdy_comparacion1, invalid_op1, rdy_sqrt1, rdy_v2_v1, rdy_fs_d, rdy_cuatro_piL_fs_d, rdy_f5, rdy_f6;
   reg calcular_sqrt1, calcular_sqrt2;  
-  wire [31:0] sqrt1, v2_v1, fs_d, 4piL_fs_d, f5, f6;
+  wire [31:0] sqrt1, v2_v1, fs_d, cuatro_piL_fs_d, f5, f6;
 
   wire rdy_f7, rdy_f8, rdy_tau1_modo2a, rdy_fs_v2_v1, rdy_f9, rdy_f10, rdy_tau2_modo2a, rdy_f11, rdy_phi_modo2a;  
   wire [31:0]  f7, f8, tau1_modo2a, fs_v2_v1, f9, f10, tau2_modo2a, f11, phi_modo2a;
@@ -50,8 +50,8 @@ module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi,
   wire [31:0] tau1_modo2b, tau1_modo1,tau1_modo1_d, tau1_modo2b_d, c2_fs, c2_fs_Vdc2p, tau2_modo1, tau2_modo2b;
   wire rdy_tau1_modo1_d, rdy_tau1_modo2b_d, rdy_c2_fs, rdy_c2_fs_Vdc2p, rdy_tau2_modo1, rdy_tau2_modo2b;
 
-  wire rdy_2pi2L_fs, rdy_2pi2L_fs_Iref, rdy_Vdc2p_tau2_modo2b, rdy_f12, rdy_f13, rdy_phi_modo2b;
-  wire [31:0] 2pi2L_fs, 2pi2L_fs_Iref, Vdc2p_tau2_modo2b, f12, f13, phi_modo2b;
+  wire rdy_dos_pi2L_fs, rdy_dos_pi2L_fs_Iref, rdy_Vdc2p_tau2_modo2b, rdy_f12, rdy_f13, rdy_phi_modo2b, rdy_f14;
+  wire [31:0] dos_pi2L_fs, dos_pi2L_fs_Iref, Vdc2p_tau2_modo2b, f12, f13, phi_modo2b, f14;
 
 
   wire [31:0] h1, h2, h3, h4, h5, h6, aux2, menos_2pi2L_fs, menos_2pi2L_fs_Iref;
@@ -69,6 +69,10 @@ module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi,
   wire rdy_tau1_modo2a_final, rdy_tau2_modo2a_final, rdy_tau2_modo2b_final, rdy_tau2_modo1_final, rdy_phi_modo2a_final, rdy_phi_modo2b_final, rdy_phi_modo1_final;
   wire signed [8:0] tau1_modo2a_final, tau2_modo2a_final, tau2_modo2b_final, tau2_modo1_final, phi_modo2a_final, phi_modo2b_final, phi_modo1_final;
 
+  wire rdy_r1, rdy_flag1, flag1, rdy_flag2, flag2;
+  wire [31:0] r1;
+
+
 
   localparam razon_vueltas= 32'b01000000101100000000000000000000;  // (n1/n2)
   localparam razon_vueltas_inv= 32'b00111110001110100010111010001100;  // (n2/n1)
@@ -76,19 +80,19 @@ module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi,
   localparam f1=32'b00111101000001110110011110111000; // ((n2/n1)^2 /4) * Isc^2
   localparam f2=32'b01000110000111000100000000000000; // (1/(4L))
   localparam uno=32'b00111111100000000000000000000000;  // 1 en float
-  localparam 4piL=32'b00111001101001001011010110111110; //4*pi*L
+  localparam cuatro_piL=32'b00111001101001001011010110111110; //4*pi*L
   localparam Ipc=32'b01000000000000000000000000000000; //2 en float 
   localparam c1=32'b10111001110000101010100000111110; //c1 =  -2 pi * L * (Ipc + Isc*n2/n1)
   localparam pi=32'b01000000010010010000111111011011; //pi en float 
   localparam c2=32'b10111010001001001011010110111110; //c2= -4pi*L*Ipc
-  localparam 2pi2L=32'b00111010000000010101110011100110; //2 pi^2 * L
+  localparam dos_pi2L=32'b00111010000000010101110011100110; //2 pi^2 * L
   localparam menos_2pi2L=32'b10111010000000010101110011100110; //-2 pi^2 * L
   localparam pi_medio=32'b00111111110010010000111111011011; //pi/2
   localparam menos_pi_medio=32'b10111111110010010000111111011011; //-pi/2
   localparam menos_1cuarto=32'b10111110100000000000000000000000; // -1/4
   localparam menos_pi2_cuarto= 32'b11000000000111011110100111100110; // - pi^2 /4
   localparam escalado = 32'b01000010101000100101011010001010; // 255/pi
-
+  localparam dos=32'b01000000000000000000000000000000;// 2 in float 
 
 
   /////////////////////Paso de las entradas a float
@@ -308,16 +312,16 @@ multiply_float b4 (
 
 multiply_float b5 (
   .a(fs_d), // input [31 : 0] a
-  .b(4piL), // input [31 : 0] b
+  .b(cuatro_piL), // input [31 : 0] b
   .operation_nd(rdy_fs_d), // input operation_nd
   .clk(clk), // input clk
-  .result(4piL_fs_d), // 
-  .rdy(rdy_4piL_fs_d) // output rdy
+  .result(cuatro_piL_fs_d), // 
+  .rdy(rdy_cuatro_piL_fs_d) // output rdy
 );
 
 //f5
 Divide_float b6 (
-  .a(4piL_fs_d), // input [31 : 0] a
+  .a(cuatro_piL_fs_d), // input [31 : 0] a
   .b(v2_v1), // input [31 : 0] b
   .operation_nd(rdy_v2_v1), // input operation_nd
   .clk(clk), // input clk
@@ -377,7 +381,7 @@ Divide_float b11 (
 
 multiply_float b12 (
   .a(fs_v2_v1), // input [31 : 0] a
-  .b(4piL), // input [31 : 0] b
+  .b(cuatro_piL), // input [31 : 0] b
   .operation_nd(rdy_fs_v2_v1), // input operation_nd
   .clk(clk), // input clk
   .result(f9), // 
@@ -427,7 +431,7 @@ Divide_float b16 (
 assign tau1_modo2b = pi;
 assign tau1_modo1  = pi;
 
-Divide_float c1 (
+Divide_float k1 (
   .a(tau1_modo2b), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -437,7 +441,7 @@ Divide_float c1 (
 );
 
 
-Divide_float c2 (
+Divide_float k2 (
   .a(tau1_modo1), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -446,7 +450,7 @@ Divide_float c2 (
   .rdy(rdy_tau1_modo1_d) // output rdy
 );
 
-multiply_float c3 (
+multiply_float k3 (
   .a(c2), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -455,7 +459,7 @@ multiply_float c3 (
   .rdy(rdy_c2_fs) // output rdy
 );
 
-Divide_float c4 (
+Divide_float k4 (
   .a(c2_fs), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -466,7 +470,7 @@ Divide_float c4 (
 
 
 //tau2_modo2b
-suma_float c5 (
+suma_float k5 (
   .a(tau1_modo2b_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo2b_d), // input operation_nd
@@ -477,7 +481,7 @@ suma_float c5 (
 
 
 //tau2_modo1
-suma_float c6 (
+suma_float k6 (
   .a(tau1_modo1_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo1_d), // input operation_nd
@@ -490,21 +494,21 @@ suma_float c6 (
 ///////////////////////////
 
 multiply_float d1 (
-  .a(2pi2L), // input [31 : 0] a
+  .a(dos_pi2L), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
   .clk(clk), // input clk
-  .result(2pi2L_fs), // 
-  .rdy(rdy_2pi2L_fs) // output rdy
+  .result(dos_pi2L_fs), // 
+  .rdy(rdy_dos_pi2L_fs) // output rdy
 );
 
 multiply_float d2 (
-  .a(2pi2L_fs), // input [31 : 0] a
+  .a(dos_pi2L_fs), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
-  .operation_nd(rdy_2pi2L_fs), // input operation_nd
+  .operation_nd(rdy_dos_pi2L_fs), // input operation_nd
   .clk(clk), // input clk
-  .result(2pi2L_fs_Iref), // 
-  .rdy(rdy_2pi2L_fs_Iref) // output rdy
+  .result(dos_pi2L_fs_Iref), // 
+  .rdy(rdy_dos_pi2L_fs_Iref) // output rdy
 );
 
 
@@ -519,7 +523,7 @@ multiply_float d3 (
 
 
 Divide_float d4 (
-  .a(2pi2L_fs_Iref), // input [31 : 0] a
+  .a(dos_pi2L_fs_Iref), // input [31 : 0] a
   .b(Vdc2p_tau2_modo2b), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p_tau2_modo2b), // input operation_nd
   .clk(clk), // input clk
@@ -540,6 +544,15 @@ Divide_float d6 (
   .a(tau2_modo2b), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(f14), // output [31 : 0] result
+  .rdy(rdy_f14) // output rdy
+);
+
+suma_float d7 (
+  .a(f13), // input [31 : 0] a
+  .b(f14), // input [31 : 0] b
+  .operation_nd(rdy_f13), // input operation_nd
   .clk(clk), // input clk
   .result(phi_modo2b), // output [31 : 0] result
   .rdy(rdy_phi_modo2b) // output rdy
@@ -631,7 +644,7 @@ suma_float e9 (
 
 ///////////////////que hacer con aux2?
 
-mayor_igual_float f1 (
+mayor_igual_float m1 (
   .a(aux2), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux2), // input operation_nd
@@ -654,7 +667,7 @@ begin
 end
 
   // raiz de aux
-  sqrt_float f2 (
+  sqrt_float m2 (
   .a(aux2), // input [31 : 0] a
   .operation_nd(calcular_sqrt2), // input operation_nd
   .clk(clk), // input clk
@@ -663,7 +676,7 @@ end
   .rdy(rdy_sqrt2) // output rdy
 );
 
-Divide_float f3 (
+Divide_float m3 (
   .a(tau2_modo1), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -672,7 +685,7 @@ Divide_float f3 (
   .rdy(rdy_tau2_modo1_dos) // output rdy
 );
 
-resta_float f4 (
+resta_float m4 (
   .a(tau2_modo1_dos), // input [31 : 0] a
   .b(sqrt2), // input [31 : 0] b
   .operation_nd(rdy_sqrt2), // input operation_nd
@@ -844,23 +857,54 @@ float_to_int j7 (
 ///////////////////////sincronizar 
 
 
+resta_float extra1 (
+  .a(tau2_modo2b), // input [31 : 0] a
+  .b(pi), // input [31 : 0] b
+  .operation_nd(rdy_tau2_modo2b), // input operation_nd
+  .clk(clk), // input clk
+  .result(r1), // output [31 : 0] result
+  .rdy(rdy_r1) // output rdy
+);
 
-always @(posedge clk)
+mayor_igual_float extra2 (
+  .a(phi_modo2b), // input [31 : 0] a
+  .b(r1), // input [31 : 0] b
+  .operation_nd(rdy_r1), // input operation_nd
+  .clk(clk), // input clk
+  .result(flag1), // output [0 : 0] result
+  .rdy(rdy_flag1) // output rdy
+);
+
+
+
+mayor_igual_float extra3 (
+  .a(tau2_modo1), // input [31 : 0] a
+  .b(phi_modo1), // input [31 : 0] b
+  .operation_nd(rdy_phi_modo1), // input operation_nd
+  .clk(clk), // input clk
+  .result(flag2), // output [0 : 0] result
+  .rdy(rdy_flag2) // output rdy
+);
+
+
+
+always @(posedge trigger)
 begin
-	if ((tau1_modo2a_final <= 9'd255) && aux1_positivo) begin
+	if (aux1_positivo)
+  begin
 		tau1 <= tau1_modo2a_final;   
 		tau2 <= tau2_modo2a_final;
 		phi <= phi_modo2a_final;
 		modo <= 2'd0;	
 	end
-	else if ((phi_modo2b_final < 9'd0) && (phi_modo2b_final >= tau2_modo2b_final - 9'd255)) 
+	else if ((phi_modo2b_final[8]) && (flag1)) 
 	begin 
 		tau1 <= 9'd255;   
 		tau2 <= tau2_modo2b_final;
 		phi <= phi_modo2b_final;
 		modo <= 2'd1;
 	end
-	else if (aux2_positivo && (phi_modo1_final>=9'd0))
+	else if (aux2_positivo && (~phi_modo1_final[8]) && (flag2)) // es necesario agregar flag 2, ver referencia en verde
 	begin
 		tau1 <= 9'd255;   
 		tau2 <= tau2_modo1_final;
@@ -872,7 +916,7 @@ begin
 		tau1 <= tau1;   
 		tau2 <= tau2;
 		phi <= phi;
-		modo <= 3'd2;	
+		modo <= 2'd3;	
 	end
 end
 
