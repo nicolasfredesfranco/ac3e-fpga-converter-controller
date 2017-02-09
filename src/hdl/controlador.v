@@ -20,11 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador(clk, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi);
-  input clk, trigger;
+module controlador(clk /*, trigger*/, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+  input clk;
+  //input trigger;
   input signed [13:0] Vdc1, Vdc2, Iref;
   input signed [18:0] fs_DAB;
   output reg signed [8:0] tau1, tau2, phi;
+  output reg [1:0] modo;
 
   wire [31:0] Vdc1_float, Vdc2_float, Iref_float, fs_float;
   wire rdy_Vdc1, rdy_Vdc2, rdy_Iref, rdy_fs;
@@ -171,7 +173,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_Vdc2p) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float a1 (
   .a(Vdc2p), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -181,7 +183,7 @@ Divide_float your_instance_name (
 );
 
 //f2*Idc_ref
-multiply_float calculo_Vdc2p (
+multiply_float a2 (
   .a(f2), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Iref_adap), // input operation_nd
@@ -191,7 +193,7 @@ multiply_float calculo_Vdc2p (
 );
 
 //f2*Idc_ref*Vdc1
-multiply_float calculo_Vdc2p (
+multiply_float a3 (
   .a(f2_Iref), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_f2_Iref), // input operation_nd
@@ -201,7 +203,7 @@ multiply_float calculo_Vdc2p (
 );
 
 // f2*(Idc_ref * Vdc1/fs)
-Divide_float your_instance_name (
+Divide_float a4 (
   .a(f2_Iref_Vdc1), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_f2_Iref_Vdc1), // input operation_nd
@@ -211,7 +213,7 @@ Divide_float your_instance_name (
 );
 
 //(1/d)
-Divide_float your_instance_name (
+Divide_float a5 (
   .a(Vdc1_float_adap), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -221,7 +223,7 @@ Divide_float your_instance_name (
 );
 
 //1- (1/d)
-resta_float your_instance_name (
+resta_float a6 (
   .a(uno), // input [31 : 0] a
   .b(d_inv), // input [31 : 0] b
   .operation_nd(rdy_d_inv), // input operation_nd
@@ -232,7 +234,7 @@ resta_float your_instance_name (
 
 
 //f4
-multiply_float calculo_Vdc2p (
+multiply_float a7 (
   .a(f3), // input [31 : 0] a
   .b(uno_d_inv), // input [31 : 0] b
   .operation_nd(rdy_f3), // input operation_nd
@@ -242,7 +244,7 @@ multiply_float calculo_Vdc2p (
 );
 
 //aux1
-suma_float your_instance_name (
+suma_float a8 (
   .a(f1), // input [31 : 0] a
   .b(f4), // input [31 : 0] b
   .operation_nd(rdy_f4), // input operation_nd
@@ -253,7 +255,7 @@ suma_float your_instance_name (
 
 /////////////////////// que hacer con aux1? 
 
-mayor_igual_float your_instance_name (
+mayor_igual_float b1 (
   .a(aux1), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux1), // input operation_nd
@@ -276,7 +278,7 @@ begin
 end
 
   // raiz de aux
-  sqrt_float your_instance_name (
+  sqrt_float b2 (
   .a(aux1), // input [31 : 0] a
   .operation_nd(calcular_sqrt1), // input operation_nd
   .clk(clk), // input clk
@@ -286,7 +288,7 @@ end
 );
 
 
-resta_float your_instance_name (
+resta_float b3 (
   .a(Vdc2p), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -295,7 +297,7 @@ resta_float your_instance_name (
   .rdy(rdy_v2_v1) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float b4 (
   .a(fs_float), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -304,7 +306,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_fs_d) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float b5 (
   .a(fs_d), // input [31 : 0] a
   .b(4piL), // input [31 : 0] b
   .operation_nd(rdy_fs_d), // input operation_nd
@@ -314,7 +316,7 @@ multiply_float calculo_Vdc2p (
 );
 
 //f5
-Divide_float your_instance_name (
+Divide_float b6 (
   .a(4piL_fs_d), // input [31 : 0] a
   .b(v2_v1), // input [31 : 0] b
   .operation_nd(rdy_v2_v1), // input operation_nd
@@ -325,7 +327,7 @@ Divide_float your_instance_name (
 
 
 //Ipc *(1- (1/d))
-multiply_float calculo_Vdc2p (
+multiply_float b7 (
   .a(Ipc), // input [31 : 0] a
   .b(uno_d_inv), // input [31 : 0] b
   .operation_nd(rdy_uno_d_inv), // input operation_nd
@@ -334,7 +336,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_f6) // output rdy
 );
 
-suma_float your_instance_name (
+suma_float b8 (
   .a(f6), // input [31 : 0] a
   .b(razon_vueltas_inv), // input [31 : 0] b
   .operation_nd(rdy_f6), // input operation_nd
@@ -344,7 +346,7 @@ suma_float your_instance_name (
 );
 
 
-suma_float your_instance_name (
+suma_float b9 (
   .a(f7), // input [31 : 0] a
   .b(sqrt1), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -354,7 +356,7 @@ suma_float your_instance_name (
 );
 
 
-multiply_float calculo_Vdc2p (
+multiply_float b10 (
   .a(f5), // input [31 : 0] a
   .b(f8), // input [31 : 0] b
   .operation_nd(rdy_f5), // input operation_nd
@@ -364,7 +366,7 @@ multiply_float calculo_Vdc2p (
 );
 
 
-Divide_float your_instance_name (
+Divide_float b11 (
   .a(fs_float), // input [31 : 0] a
   .b(v2_v1), // input [31 : 0] b
   .operation_nd(rdy_v2_v1), // input operation_nd
@@ -373,7 +375,7 @@ Divide_float your_instance_name (
   .rdy(rdy_fs_v2_v1) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float b12 (
   .a(fs_v2_v1), // input [31 : 0] a
   .b(4piL), // input [31 : 0] b
   .operation_nd(rdy_fs_v2_v1), // input operation_nd
@@ -382,7 +384,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_f9) // output rdy
 );
 
-suma_float your_instance_name (
+suma_float b13 (
   .a(sqrt1), // input [31 : 0] a
   .b(razon_vueltas_inv), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -392,7 +394,7 @@ suma_float your_instance_name (
 );
 
 
-multiply_float calculo_Vdc2p (
+multiply_float b14 (
   .a(f9), // input [31 : 0] a
   .b(f10), // input [31 : 0] b
   .operation_nd(rdy_f9), // input operation_nd
@@ -401,7 +403,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_tau2_modo2a) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float b15 (
   .a(c1), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -410,7 +412,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_f11) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float b16 (
   .a(f11), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_f11), // input operation_nd
@@ -425,7 +427,7 @@ Divide_float your_instance_name (
 assign tau1_modo2b = pi;
 assign tau1_modo1  = pi;
 
-Divide_float your_instance_name (
+Divide_float c1 (
   .a(tau1_modo2b), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -435,7 +437,7 @@ Divide_float your_instance_name (
 );
 
 
-Divide_float your_instance_name (
+Divide_float c2 (
   .a(tau1_modo1), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -444,7 +446,7 @@ Divide_float your_instance_name (
   .rdy(rdy_tau1_modo1_d) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float c3 (
   .a(c2), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -453,7 +455,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_c2_fs) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float c4 (
   .a(c2_fs), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -464,7 +466,7 @@ Divide_float your_instance_name (
 
 
 //tau2_modo2b
-suma_float your_instance_name (
+suma_float c5 (
   .a(tau1_modo2b_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo2b_d), // input operation_nd
@@ -475,7 +477,7 @@ suma_float your_instance_name (
 
 
 //tau2_modo1
-suma_float your_instance_name (
+suma_float c6 (
   .a(tau1_modo1_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo1_d), // input operation_nd
@@ -485,9 +487,9 @@ suma_float your_instance_name (
 );
 
 
-//////
+///////////////////////////
 
-multiply_float calculo_Vdc2p (
+multiply_float d1 (
   .a(2pi2L), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -496,7 +498,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_2pi2L_fs) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float d2 (
   .a(2pi2L_fs), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_2pi2L_fs), // input operation_nd
@@ -506,7 +508,7 @@ multiply_float calculo_Vdc2p (
 );
 
 
-multiply_float calculo_Vdc2p (
+multiply_float d3 (
   .a(Vdc2p), // input [31 : 0] a
   .b(tau2_modo2b), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -516,7 +518,7 @@ multiply_float calculo_Vdc2p (
 );
 
 
-Divide_float your_instance_name (
+Divide_float d4 (
   .a(2pi2L_fs_Iref), // input [31 : 0] a
   .b(Vdc2p_tau2_modo2b), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p_tau2_modo2b), // input operation_nd
@@ -525,7 +527,7 @@ Divide_float your_instance_name (
   .rdy(rdy_f12) // output rdy
 );
 
-suma_float your_instance_name (
+suma_float d5 (
   .a(f12), // input [31 : 0] a
   .b(menos_pi_medio), // input [31 : 0] b
   .operation_nd(rdy_f12), // input operation_nd
@@ -534,7 +536,7 @@ suma_float your_instance_name (
   .rdy(rdy_f13) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float d6 (
   .a(tau2_modo2b), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -545,7 +547,7 @@ Divide_float your_instance_name (
 
 ////////////////// aux2   referencia en amarillo
 
-multiply_float calculo_Vdc2p (
+multiply_float e1 (
   .a(menos_1cuarto), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -554,7 +556,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_h1) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float e2 (
   .a(h1), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_h1), // input operation_nd
@@ -563,7 +565,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_h2) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float e3 (
   .a(pi_medio), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -572,7 +574,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_h3) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float e4 (
   .a(menos_2pi2L), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -581,7 +583,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_menos_2pi2L_fs) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float e5 (
   .a(menos_2pi2L_fs), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Iref_adap), // input operation_nd
@@ -590,7 +592,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_menos_2pi2L_fs_Iref) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float e6 (
   .a(menos_2pi2L_fs_Iref), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_menos_2pi2L_fs_Iref), // input operation_nd
@@ -599,7 +601,7 @@ Divide_float your_instance_name (
   .rdy(rdy_h4) // output rdy
 );
 
-suma_float your_instance_name (
+suma_float e7 (
   .a(h2), // input [31 : 0] a
   .b(menos_pi2_cuarto), // input [31 : 0] b
   .operation_nd(rdy_h2), // input operation_nd
@@ -609,7 +611,7 @@ suma_float your_instance_name (
 );
 
 
-suma_float your_instance_name (
+suma_float e8 (
   .a(h3), // input [31 : 0] a
   .b(h5), // input [31 : 0] b
   .operation_nd(rdy_h5), // input operation_nd
@@ -618,7 +620,7 @@ suma_float your_instance_name (
   .rdy(rdy_h6) // output rdy
 );
 
-suma_float your_instance_name (
+suma_float e9 (
   .a(h6), // input [31 : 0] a
   .b(h4), // input [31 : 0] b
   .operation_nd(rdy_h6), // input operation_nd
@@ -629,7 +631,7 @@ suma_float your_instance_name (
 
 ///////////////////que hacer con aux2?
 
-mayor_igual_float your_instance_name (
+mayor_igual_float f1 (
   .a(aux2), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux2), // input operation_nd
@@ -652,7 +654,7 @@ begin
 end
 
   // raiz de aux
-  sqrt_float your_instance_name (
+  sqrt_float f2 (
   .a(aux2), // input [31 : 0] a
   .operation_nd(calcular_sqrt2), // input operation_nd
   .clk(clk), // input clk
@@ -661,7 +663,7 @@ end
   .rdy(rdy_sqrt2) // output rdy
 );
 
-Divide_float your_instance_name (
+Divide_float f3 (
   .a(tau2_modo1), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -670,7 +672,7 @@ Divide_float your_instance_name (
   .rdy(rdy_tau2_modo1_dos) // output rdy
 );
 
-resta_float your_instance_name (
+resta_float f4 (
   .a(tau2_modo1_dos), // input [31 : 0] a
   .b(sqrt2), // input [31 : 0] b
   .operation_nd(rdy_sqrt2), // input operation_nd
@@ -683,7 +685,7 @@ resta_float your_instance_name (
 ////////////////////// RE ADAPTAR
 
 
-multiply_float calculo_Vdc2p (
+multiply_float g1 (
   .a(tau1_modo2a), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo2a), // input operation_nd
@@ -697,7 +699,7 @@ multiply_float calculo_Vdc2p (
 
 
 
-multiply_float calculo_Vdc2p (
+multiply_float g2 (
   .a(tau2_modo2a), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2a), // input operation_nd
@@ -706,7 +708,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_tau2_modo2a_esc) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float g3 (
   .a(tau2_modo2b), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -715,7 +717,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_tau2_modo2b_esc) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float g4 (
   .a(tau2_modo1), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -733,7 +735,7 @@ multiply_float calculo_Vdc2p (
 
 
 
-multiply_float calculo_Vdc2p (
+multiply_float g5 (
   .a(phi_modo2a), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo2a), // input operation_nd
@@ -742,7 +744,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_phi_modo2a_esc) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float g6 (
   .a(phi_modo2b), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo2b), // input operation_nd
@@ -751,7 +753,7 @@ multiply_float calculo_Vdc2p (
   .rdy(rdy_phi_modo2b_esc) // output rdy
 );
 
-multiply_float calculo_Vdc2p (
+multiply_float g7 (
   .a(phi_modo1), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo1), // input operation_nd
@@ -761,7 +763,119 @@ multiply_float calculo_Vdc2p (
 );
 
 
-/////////
+/////////////////// de float a int 
+
+
+float_to_int j1 (
+  .a(tau1_modo2a_esc), // input [31 : 0] a
+  .operation_nd(rdy_tau1_modo2a_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau1_modo2a_final), // output [8 : 0] result
+  .rdy(rdy_tau1_modo2a_final) // output rdy
+);
+
+
+
+
+
+
+
+
+float_to_int j2 (
+  .a(tau2_modo2a_esc), // input [31 : 0] a
+  .operation_nd(rdy_tau2_modo2a_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2a_final), // output [8 : 0] result
+  .rdy(rdy_tau2_modo2a_final) // output rdy
+);
+
+float_to_int j3 (
+  .a(tau2_modo2b_esc), // input [31 : 0] a
+  .operation_nd(rdy_tau2_modo2b_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo2b_final), // output [8 : 0] result
+  .rdy(rdy_tau2_modo2b_final) // output rdy
+);
+
+float_to_int j4 (
+  .a(tau2_modo1_esc), // input [31 : 0] a
+  .operation_nd(rdy_tau2_modo1_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(tau2_modo1_final), // output [8 : 0] result
+  .rdy(rdy_tau2_modo1_final) // output rdy
+);
+
+
+
+
+
+
+
+float_to_int j5 (
+  .a(phi_modo2a_esc), // input [31 : 0] a
+  .operation_nd(rdy_phi_modo2a_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2a_final), // output [8 : 0] result
+  .rdy(rdy_phi_modo2a_final) // output rdy
+);
+
+float_to_int j6 (
+  .a(phi_modo2b_esc), // input [31 : 0] a
+  .operation_nd(rdy_phi_modo2b_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo2b_final), // output [8 : 0] result
+  .rdy(rdy_phi_modo2b_final) // output rdy
+);
+
+float_to_int j7 (
+  .a(phi_modo1_esc), // input [31 : 0] a
+  .operation_nd(rdy_phi_modo1_esc), // input operation_nd
+  .clk(clk), // input clk
+  .result(phi_modo1_final), // output [8 : 0] result
+  .rdy(rdy_phi_modo1_final) // output rdy
+);
+
+
+
+
+
+
+
+///////////////////////sincronizar 
+
+
+
+always @(posedge clk)
+begin
+	if ((tau1_modo2a_final <= 9'd255) && aux1_positivo) begin
+		tau1 <= tau1_modo2a_final;   
+		tau2 <= tau2_modo2a_final;
+		phi <= phi_modo2a_final;
+		modo <= 2'd0;	
+	end
+	else if ((phi_modo2b_final < 9'd0) && (phi_modo2b_final >= tau2_modo2b_final - 9'd255)) 
+	begin 
+		tau1 <= 9'd255;   
+		tau2 <= tau2_modo2b_final;
+		phi <= phi_modo2b_final;
+		modo <= 2'd1;
+	end
+	else if (aux2_positivo && (phi_modo1_final>=9'd0))
+	begin
+		tau1 <= 9'd255;   
+		tau2 <= tau2_modo1_final;
+		phi <= phi_modo1_final;
+		modo <= 2'd2;	
+	end
+	else
+	begin
+		tau1 <= tau1;   
+		tau2 <= tau2;
+		phi <= phi;
+		modo <= 3'd2;	
+	end
+end
+
 
 
 
