@@ -28,6 +28,16 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
   output reg signed [8:0] tau1, tau2, phi;
   output reg [1:0] modo;
 
+
+  initial
+  begin
+    tau1=9'd255;
+    tau2=9'd147;
+    phi=-9'd9;
+  end
+
+
+
   wire [31:0] Vdc1_float, Vdc2_float, Iref_float, fs_float;
   wire rdy_Vdc1, rdy_Vdc2, rdy_Iref, rdy_fs;
 

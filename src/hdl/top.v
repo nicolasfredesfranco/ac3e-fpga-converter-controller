@@ -49,6 +49,10 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
             state1=INIT;
             state2=INIT;
             state3=INIT;//Nueva maquina diseñada para sincronizar las otras 2
+            pi_cuentas = 19'd500;
+            tau1_cuentas = 19'd499;
+            phi_cuentas = -19'd17;
+            tau2_cuentas = 19'd288;
         end
 
 
@@ -218,7 +222,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
                         V1=-2'd1;
                     end    
         default:    begin
-                        state1_next=INIT; 
+                        state1_next=estado1; 
                         V1=2'd0;
                     end    
         endcase
@@ -247,7 +251,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
                         V2=-2'd1;
                     end    
         default:    begin
-                        state2_next=INIT;
+                        state2_next=estado1;
                         V2=2'd0;
                     end
         endcase
@@ -323,6 +327,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
  
 
     //----------- solo para ver en el ociloscopio 
+
 
 
     always@(*)

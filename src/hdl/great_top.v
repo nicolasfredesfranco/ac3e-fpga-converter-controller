@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module great_top(clk, sync, Vdc1, Vdc2, Iref, Sp, Ss, trigger);
+module great_top(clk, sync, Vdc1, Vdc2, Iref, Sp, Ss, trigger, modo);
     input clk;
     input sync;
     input signed [13:0] Vdc1, Vdc2, Iref;

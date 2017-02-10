@@ -37,52 +37,15 @@ module main(clk, t1, t2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger); //<3
     output trigger;
     
 
-    /*
-    output clk2;
 
-    assign clk2 = clk;
-    
-
-
-    /////////////////////	
-    reg signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
-    reg signed [8:0] phi; //se entrega entre -255 y 255
-    reg signed [18:0] fs_DAB;// aguanta entre 500Hz y 250KHz 
-    reg [7:0] deadtime;
-    ///////////mode 1
-
-
-    
-    always @(*)
-     begin
-    	if (switch) begin
-    		t1 = 9'd223; //CORRESPONDE A 7PI/8
-			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = 9'd255; //CORRESPONDE A -PI/8
-    		fs_DAB = 19'd100000; // OPERANDO A 100KHz
-    		deadtime=8'd20; //equivale a 200ns
-    	end
-    	else begin
-    		t1 = 9'd223; //CORRESPONDE A 7PI/8
-			t2 = 9'd128; //CORRESPONDE A PI/2
-			phi = -9'd64; //CORRESPONDE A -PI/8
-    		fs_DAB = 19'd100000; // OPERANDO A 100KHz
-    		deadtime=8'd20;
-    		
-    	end
+    initial
+    begin
+        t1_sinc=9'd255;
+        t2_sinc=9'd147;
+        phi_sinc=-9'd9;
     end
 
-    */
-
-
-    /////////mode 2
-
-
-
-
-
-
-    ////////////////////
+  
     reg signed [8:0] t1_sinc, t2_sinc; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     reg signed [8:0] phi_sinc; //se entrega entre -255 y 255
     reg signed [18:0] fs_DAB_sinc;// esta en Hz y va de 0 a 150000
