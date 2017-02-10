@@ -22,23 +22,28 @@
 //                      -Valor minimo de deadtime es 1
 //                      -Ojo con la saturacion de valores negativos
 //////////////////////////////////////////////////////////////////////////////////
-module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, trigger, clk2); //<3
+module main(clk, t1, t2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger); //<3
     input clk; // implementar rst de emergencia  
-    /*input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
+    input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000 
-    input [7:0] deadtime;*/
+    input [7:0] deadtime;
     input sync; //signal de disparo
 
-    input switch; //borrar despues
+    //input switch; //borrar despues
 
     output [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
     output [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)
     output trigger;
+    
+
+    /*
     output clk2;
 
     assign clk2 = clk;
     
+
+
     /////////////////////	
     reg signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     reg signed [8:0] phi; //se entrega entre -255 y 255
@@ -46,6 +51,8 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
     reg [7:0] deadtime;
     ///////////mode 1
 
+
+    
     always @(*)
      begin
     	if (switch) begin
@@ -65,7 +72,7 @@ module main(clk,/*, rst, t1, t2, phi, fs_DAB, deadtime,*/sync, switch, Sp, Ss, t
     	end
     end
 
-
+    */
 
 
     /////////mode 2
