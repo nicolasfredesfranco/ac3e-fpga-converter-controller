@@ -64,8 +64,8 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
   wire [31:0] dos_pi2L_fs, dos_pi2L_fs_Iref, Vdc2p_tau2_modo2b, f12, f13, phi_modo2b, f14;
 
 
-  wire [31:0] h1, h2, h3, h4, h5, h6, aux2, menos_2pi2L_fs, menos_2pi2L_fs_Iref;
-  wire rdy_h1, rdy_h2, rdy_h3, rdy_h4, rdy_h5, rdy_h6, rdy_aux2, rdy_menos_2pi2L_fs, rdy_menos_2pi2L_fs_Iref;
+  wire [31:0] h1, h2, h3, h4, h6, aux2, menos_2pi2L_fs, menos_2pi2L_fs_Iref;
+  wire rdy_h1, rdy_h2, rdy_h3, rdy_h4, rdy_h6, rdy_aux2, rdy_menos_2pi2L_fs, rdy_menos_2pi2L_fs_Iref;
 
 
   wire aux2_positivo, rdy_comparacion2, invalid_op2, rdy_sqrt2, rdy_tau2_modo1_dos, rdy_phi_modo1;
@@ -338,6 +338,7 @@ Divide_float b6 (
   .result(f5), // output [31 : 0] result
   .rdy(rdy_f5) // output rdy
 );
+
 
 
 //Ipc *(1- (1/d))
@@ -624,6 +625,7 @@ Divide_float e6 (
   .rdy(rdy_h4) // output rdy
 );
 
+/*
 suma_float e7 (
   .a(h2), // input [31 : 0] a
   .b(menos_pi2_cuarto), // input [31 : 0] b
@@ -632,12 +634,12 @@ suma_float e7 (
   .result(h5), // output [31 : 0] result
   .rdy(rdy_h5) // output rdy
 );
-
+*/
 
 suma_float e8 (
   .a(h3), // input [31 : 0] a
-  .b(h5), // input [31 : 0] b
-  .operation_nd(rdy_h5), // input operation_nd
+  .b(h2), // input [31 : 0] b
+  .operation_nd(rdy_h2), // input operation_nd
   .clk(clk), // input clk
   .result(h6), // output [31 : 0] result
   .rdy(rdy_h6) // output rdy
@@ -654,7 +656,7 @@ suma_float e9 (
 
 ///////////////////que hacer con aux2?
 
-mayor_igual_float m1 (
+mayor_igual_float m1 (                          //esta caja se puede sacar y cambiar por un analisis del primer bit
   .a(aux2), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux2), // input operation_nd
@@ -900,7 +902,7 @@ mayor_igual_float extra3 (
 
 always @(posedge trigger)
 begin
-	if (aux1_positivo)
+	if (aux1_positivo && (tau1_modo2a_final < 9'd255)) //preguntar a miguel porque restringe a que sea menor a pi 
   begin
 		tau1 <= tau1_modo2a_final;   
 		tau2 <= tau2_modo2a_final;
