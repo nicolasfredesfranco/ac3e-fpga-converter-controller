@@ -20,30 +20,42 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module great_top(clk, sync, Vdc1, Vdc2, Iref, Sp, Ss, trigger, modo);
+module great_top(clk, CE, rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4, trigger, modo);
     input clk;
+    input CE;
+    input rst;
     input sync;
     input signed [13:0] Vdc1, Vdc2, Iref;
-    output [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
-    output [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)
     output trigger;
+    output Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4;
     output [1:0] modo; //se puede dejar como wire al aire 
+
+
+    wire [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
+    wire [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)
+
+	assign Sp1 = Sp[3];
+	assign Sp2 = Sp[2];
+	assign Sp3 = Sp[1];
+	assign Sp4 = Sp[0];   
+
+	assign Ss1 = Ss[3];
+	assign Ss2 = Ss[2];
+	assign Ss3 = Ss[1];
+	assign Ss4 = Ss[0];
 
     //wire [1:0] modo;
 
     wire signed [8:0] tau1, tau2, phi;
 
-    localparam fs_DAB = 19'd100000;
-    localparam deadtime = 8'd20;
+    localparam fs_DAB = 19'd100000; // en HZ
+    localparam deadtime = 8'd20;    // en cuentas de clk
+    localparam fs_clk = 28'd100_000_000; // en Hz	
 
-    main actuador(clk, tau1, tau2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger);
-
-
-    controlador calculador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+    main actuador(clk, CE, rst, fs_clk, tau1, tau2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger);
 
 
-
-
+    controlador calculador(clk, CE, rst, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
 
 
 endmodule

@@ -20,8 +20,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+module controlador(clk, CE, rst, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
   input clk;
+  input CE;
+  input rst;
   input trigger;
   input signed [13:0] Vdc1, Vdc2, Iref;
   input signed [18:0] fs_DAB;
@@ -109,6 +111,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   SInt13ToSingle float_vdc1 (
+  .ce(CE),
   .a(Vdc1), // input [13 : 0] a
   .clk(clk), // input clk
   .result(Vdc1_float), // output [31 : 0] result
@@ -117,6 +120,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   SInt13ToSingle float_vdc2 (
+  .ce(CE),  
   .a(Vdc2), // input [13 : 0] a
   .clk(clk), // input clk
   .result(Vdc2_float), // output [31 : 0] result
@@ -125,6 +129,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   SInt13ToSingle float_iref (
+  .ce(CE),  
   .a(Iref), // input [13 : 0] a
   .clk(clk), // input clk
   .result(Iref_float), // output [31 : 0] result
@@ -133,6 +138,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   SInt18ToSingle float_fs (
+  .ce(CE),  
   .a(fs_DAB), // input [18 : 0] a
   .clk(clk), // input clk
   .result(fs_float), // output [31 : 0] result
@@ -147,6 +153,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   multiply_float adaptacion_Vdc1 (
+  .ce(CE),  
   .a(Vdc1_float), // input [31 : 0] a
   .b(32'b00111101111110100000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Vdc1), // input operation_nd
@@ -157,6 +164,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 
 
   multiply_float adaptacion_Vdc2 (
+  .ce(CE),  
   .a(Vdc2_float), // input [31 : 0] a
   .b(32'b00111101111110100000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Vdc2), // input operation_nd
@@ -166,6 +174,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 );
 
   multiply_float adaptacion_Iref (
+  .ce(CE),
   .a(Iref_float), // input [31 : 0] a
   .b(32'b00111011110010000000000000000000), // input [31 : 0] b
   .operation_nd(rdy_Iref), // input operation_nd
@@ -179,6 +188,7 @@ module controlador(clk , trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, mod
 ////////////////////////// calculo primer aux
 
 multiply_float calculo_Vdc2p (
+  .ce(CE),
   .a(Vdc2_float_adap), // input [31 : 0] a
   .b(razon_vueltas), // input [31 : 0] b
   .operation_nd(rdy_Vdc2_adap), // input operation_nd
@@ -188,6 +198,7 @@ multiply_float calculo_Vdc2p (
 );
 
 Divide_float a1 (
+  .ce(CE),
   .a(Vdc2p), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -198,6 +209,7 @@ Divide_float a1 (
 
 //f2*Idc_ref
 multiply_float a2 (
+  .ce(CE),
   .a(f2), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Iref_adap), // input operation_nd
@@ -208,6 +220,7 @@ multiply_float a2 (
 
 //f2*Idc_ref*Vdc1
 multiply_float a3 (
+  .ce(CE),
   .a(f2_Iref), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_f2_Iref), // input operation_nd
@@ -218,6 +231,7 @@ multiply_float a3 (
 
 // f2*(Idc_ref * Vdc1/fs)
 Divide_float a4 (
+  .ce(CE),
   .a(f2_Iref_Vdc1), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_f2_Iref_Vdc1), // input operation_nd
@@ -228,6 +242,7 @@ Divide_float a4 (
 
 //(1/d)
 Divide_float a5 (
+  .ce(CE),
   .a(Vdc1_float_adap), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -238,6 +253,7 @@ Divide_float a5 (
 
 //1- (1/d)
 resta_float a6 (
+  .ce(CE),
   .a(uno), // input [31 : 0] a
   .b(d_inv), // input [31 : 0] b
   .operation_nd(rdy_d_inv), // input operation_nd
@@ -249,6 +265,7 @@ resta_float a6 (
 
 //f4
 multiply_float a7 (
+  .ce(CE),
   .a(f3), // input [31 : 0] a
   .b(uno_d_inv), // input [31 : 0] b
   .operation_nd(rdy_f3), // input operation_nd
@@ -259,6 +276,7 @@ multiply_float a7 (
 
 //aux1
 suma_float a8 (
+  .ce(CE),
   .a(f1), // input [31 : 0] a
   .b(f4), // input [31 : 0] b
   .operation_nd(rdy_f4), // input operation_nd
@@ -270,6 +288,7 @@ suma_float a8 (
 /////////////////////// que hacer con aux1? 
 
 mayor_igual_float b1 (
+  .ce(CE),
   .a(aux1), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux1), // input operation_nd
@@ -293,6 +312,7 @@ end
 
   // raiz de aux
   sqrt_float b2 (
+  .ce(CE),
   .a(aux1), // input [31 : 0] a
   .operation_nd(calcular_sqrt1), // input operation_nd
   .clk(clk), // input clk
@@ -303,6 +323,7 @@ end
 
 
 resta_float b3 (
+  .ce(CE),
   .a(Vdc2p), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -312,6 +333,7 @@ resta_float b3 (
 );
 
 multiply_float b4 (
+  .ce(CE),
   .a(fs_float), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -321,6 +343,7 @@ multiply_float b4 (
 );
 
 multiply_float b5 (
+  .ce(CE),
   .a(fs_d), // input [31 : 0] a
   .b(cuatro_piL), // input [31 : 0] b
   .operation_nd(rdy_fs_d), // input operation_nd
@@ -331,6 +354,7 @@ multiply_float b5 (
 
 //f5
 Divide_float b6 (
+  .ce(CE),
   .a(cuatro_piL_fs_d), // input [31 : 0] a
   .b(v2_v1), // input [31 : 0] b
   .operation_nd(rdy_v2_v1), // input operation_nd
@@ -343,6 +367,7 @@ Divide_float b6 (
 
 //Ipc *(1- (1/d))
 multiply_float b7 (
+  .ce(CE),
   .a(Ipc), // input [31 : 0] a
   .b(uno_d_inv), // input [31 : 0] b
   .operation_nd(rdy_uno_d_inv), // input operation_nd
@@ -352,6 +377,7 @@ multiply_float b7 (
 );
 
 suma_float b8 (
+  .ce(CE),
   .a(f6), // input [31 : 0] a
   .b(razon_vueltas_inv), // input [31 : 0] b
   .operation_nd(rdy_f6), // input operation_nd
@@ -362,6 +388,7 @@ suma_float b8 (
 
 
 suma_float b9 (
+  .ce(CE),
   .a(f7), // input [31 : 0] a
   .b(sqrt1), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -372,6 +399,7 @@ suma_float b9 (
 
 
 multiply_float b10 (
+  .ce(CE),
   .a(f5), // input [31 : 0] a
   .b(f8), // input [31 : 0] b
   .operation_nd(rdy_f5), // input operation_nd
@@ -382,6 +410,7 @@ multiply_float b10 (
 
 
 Divide_float b11 (
+  .ce(CE),
   .a(fs_float), // input [31 : 0] a
   .b(v2_v1), // input [31 : 0] b
   .operation_nd(rdy_v2_v1), // input operation_nd
@@ -391,6 +420,7 @@ Divide_float b11 (
 );
 
 multiply_float b12 (
+  .ce(CE),
   .a(fs_v2_v1), // input [31 : 0] a
   .b(cuatro_piL), // input [31 : 0] b
   .operation_nd(rdy_fs_v2_v1), // input operation_nd
@@ -400,6 +430,7 @@ multiply_float b12 (
 );
 
 suma_float b13 (
+  .ce(CE),
   .a(sqrt1), // input [31 : 0] a
   .b(razon_vueltas_inv), // input [31 : 0] b
   .operation_nd(rdy_sqrt1), // input operation_nd
@@ -410,6 +441,7 @@ suma_float b13 (
 
 
 multiply_float b14 (
+  .ce(CE),
   .a(f9), // input [31 : 0] a
   .b(f10), // input [31 : 0] b
   .operation_nd(rdy_f9), // input operation_nd
@@ -419,6 +451,7 @@ multiply_float b14 (
 );
 
 multiply_float b15 (
+  .ce(CE),
   .a(c1), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -428,6 +461,7 @@ multiply_float b15 (
 );
 
 Divide_float b16 (
+  .ce(CE),
   .a(f11), // input [31 : 0] a
   .b(Vdc1_float_adap), // input [31 : 0] b
   .operation_nd(rdy_f11), // input operation_nd
@@ -443,6 +477,7 @@ assign tau1_modo2b = pi;
 assign tau1_modo1  = pi;
 
 Divide_float k1 (
+  .ce(CE),
   .a(tau1_modo2b), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -453,6 +488,7 @@ Divide_float k1 (
 
 
 Divide_float k2 (
+  .ce(CE),
   .a(tau1_modo1), // input [31 : 0] a
   .b(d), // input [31 : 0] b
   .operation_nd(rdy_d), // input operation_nd
@@ -462,6 +498,7 @@ Divide_float k2 (
 );
 
 multiply_float k3 (
+  .ce(CE),
   .a(c2), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -471,6 +508,7 @@ multiply_float k3 (
 );
 
 Divide_float k4 (
+  .ce(CE),
   .a(c2_fs), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p), // input operation_nd
@@ -482,6 +520,7 @@ Divide_float k4 (
 
 //tau2_modo2b
 suma_float k5 (
+  .ce(CE),
   .a(tau1_modo2b_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo2b_d), // input operation_nd
@@ -493,6 +532,7 @@ suma_float k5 (
 
 //tau2_modo1
 suma_float k6 (
+  .ce(CE),
   .a(tau1_modo1_d), // input [31 : 0] a
   .b(c2_fs_Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo1_d), // input operation_nd
@@ -505,6 +545,7 @@ suma_float k6 (
 ///////////////////////////
 
 multiply_float d1 (
+  .ce(CE),
   .a(dos_pi2L), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -514,6 +555,7 @@ multiply_float d1 (
 );
 
 multiply_float d2 (
+  .ce(CE),
   .a(dos_pi2L_fs), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_dos_pi2L_fs), // input operation_nd
@@ -524,6 +566,7 @@ multiply_float d2 (
 
 
 multiply_float d3 (
+  .ce(CE),
   .a(Vdc2p), // input [31 : 0] a
   .b(tau2_modo2b), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -534,6 +577,7 @@ multiply_float d3 (
 
 
 Divide_float d4 (
+  .ce(CE),
   .a(dos_pi2L_fs_Iref), // input [31 : 0] a
   .b(Vdc2p_tau2_modo2b), // input [31 : 0] b
   .operation_nd(rdy_Vdc2p_tau2_modo2b), // input operation_nd
@@ -543,6 +587,7 @@ Divide_float d4 (
 );
 
 suma_float d5 (
+  .ce(CE),
   .a(f12), // input [31 : 0] a
   .b(menos_pi_medio), // input [31 : 0] b
   .operation_nd(rdy_f12), // input operation_nd
@@ -552,6 +597,7 @@ suma_float d5 (
 );
 
 Divide_float d6 (
+  .ce(CE),
   .a(tau2_modo2b), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -561,6 +607,7 @@ Divide_float d6 (
 );
 
 suma_float d7 (
+  .ce(CE),
   .a(f13), // input [31 : 0] a
   .b(f14), // input [31 : 0] b
   .operation_nd(rdy_f13), // input operation_nd
@@ -572,6 +619,7 @@ suma_float d7 (
 ////////////////// aux2   referencia en amarillo
 
 multiply_float e1 (
+  .ce(CE),
   .a(menos_1cuarto), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -581,6 +629,7 @@ multiply_float e1 (
 );
 
 multiply_float e2 (
+  .ce(CE),
   .a(h1), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_h1), // input operation_nd
@@ -590,6 +639,7 @@ multiply_float e2 (
 );
 
 multiply_float e3 (
+  .ce(CE),
   .a(pi_medio), // input [31 : 0] a
   .b(tau2_modo1), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -599,6 +649,7 @@ multiply_float e3 (
 );
 
 multiply_float e4 (
+  .ce(CE),
   .a(menos_2pi2L), // input [31 : 0] a
   .b(fs_float), // input [31 : 0] b
   .operation_nd(rdy_fs), // input operation_nd
@@ -608,6 +659,7 @@ multiply_float e4 (
 );
 
 multiply_float e5 (
+  .ce(CE),
   .a(menos_2pi2L_fs), // input [31 : 0] a
   .b(Iref_float_adap), // input [31 : 0] b
   .operation_nd(rdy_Iref_adap), // input operation_nd
@@ -617,6 +669,7 @@ multiply_float e5 (
 );
 
 Divide_float e6 (
+  .ce(CE),
   .a(menos_2pi2L_fs_Iref), // input [31 : 0] a
   .b(Vdc2p), // input [31 : 0] b
   .operation_nd(rdy_menos_2pi2L_fs_Iref), // input operation_nd
@@ -637,6 +690,7 @@ suma_float e7 (
 */
 
 suma_float e8 (
+  .ce(CE),
   .a(h3), // input [31 : 0] a
   .b(h2), // input [31 : 0] b
   .operation_nd(rdy_h2), // input operation_nd
@@ -646,6 +700,7 @@ suma_float e8 (
 );
 
 suma_float e9 (
+  .ce(CE),
   .a(h6), // input [31 : 0] a
   .b(h4), // input [31 : 0] b
   .operation_nd(rdy_h6), // input operation_nd
@@ -657,6 +712,7 @@ suma_float e9 (
 ///////////////////que hacer con aux2?
 
 mayor_igual_float m1 (                          //esta caja se puede sacar y cambiar por un analisis del primer bit
+  .ce(CE),
   .a(aux2), // input [31 : 0] a
   .b(32'b0), // input [31 : 0] b
   .operation_nd(rdy_aux2), // input operation_nd
@@ -680,6 +736,7 @@ end
 
   // raiz de aux
   sqrt_float m2 (
+  .ce(CE),
   .a(aux2), // input [31 : 0] a
   .operation_nd(calcular_sqrt2), // input operation_nd
   .clk(clk), // input clk
@@ -689,6 +746,7 @@ end
 );
 
 Divide_float m3 (
+  .ce(CE),
   .a(tau2_modo1), // input [31 : 0] a
   .b(dos), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -698,6 +756,7 @@ Divide_float m3 (
 );
 
 resta_float m4 (
+  .ce(CE),
   .a(tau2_modo1_dos), // input [31 : 0] a
   .b(sqrt2), // input [31 : 0] b
   .operation_nd(rdy_sqrt2), // input operation_nd
@@ -711,6 +770,7 @@ resta_float m4 (
 
 
 multiply_float g1 (
+  .ce(CE),
   .a(tau1_modo2a), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau1_modo2a), // input operation_nd
@@ -725,6 +785,7 @@ multiply_float g1 (
 
 
 multiply_float g2 (
+  .ce(CE),
   .a(tau2_modo2a), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2a), // input operation_nd
@@ -734,6 +795,7 @@ multiply_float g2 (
 );
 
 multiply_float g3 (
+  .ce(CE),
   .a(tau2_modo2b), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -743,6 +805,7 @@ multiply_float g3 (
 );
 
 multiply_float g4 (
+  .ce(CE),
   .a(tau2_modo1), // input [31 : 0] a
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo1), // input operation_nd
@@ -761,6 +824,7 @@ multiply_float g4 (
 
 
 multiply_float g5 (
+  .ce(CE),
   .a(phi_modo2a), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo2a), // input operation_nd
@@ -770,6 +834,7 @@ multiply_float g5 (
 );
 
 multiply_float g6 (
+  .ce(CE),
   .a(phi_modo2b), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo2b), // input operation_nd
@@ -779,6 +844,7 @@ multiply_float g6 (
 );
 
 multiply_float g7 (
+  .ce(CE),
   .a(phi_modo1), // input [31 : 0] sd
   .b(escalado), // input [31 : 0] b
   .operation_nd(rdy_phi_modo1), // input operation_nd
@@ -792,6 +858,7 @@ multiply_float g7 (
 
 
 float_to_int j1 (
+  .ce(CE),
   .a(tau1_modo2a_esc), // input [31 : 0] a
   .operation_nd(rdy_tau1_modo2a_esc), // input operation_nd
   .clk(clk), // input clk
@@ -807,6 +874,7 @@ float_to_int j1 (
 
 
 float_to_int j2 (
+  .ce(CE),
   .a(tau2_modo2a_esc), // input [31 : 0] a
   .operation_nd(rdy_tau2_modo2a_esc), // input operation_nd
   .clk(clk), // input clk
@@ -815,6 +883,7 @@ float_to_int j2 (
 );
 
 float_to_int j3 (
+  .ce(CE),
   .a(tau2_modo2b_esc), // input [31 : 0] a
   .operation_nd(rdy_tau2_modo2b_esc), // input operation_nd
   .clk(clk), // input clk
@@ -823,6 +892,7 @@ float_to_int j3 (
 );
 
 float_to_int j4 (
+  .ce(CE),
   .a(tau2_modo1_esc), // input [31 : 0] a
   .operation_nd(rdy_tau2_modo1_esc), // input operation_nd
   .clk(clk), // input clk
@@ -837,6 +907,7 @@ float_to_int j4 (
 
 
 float_to_int j5 (
+  .ce(CE),
   .a(phi_modo2a_esc), // input [31 : 0] a
   .operation_nd(rdy_phi_modo2a_esc), // input operation_nd
   .clk(clk), // input clk
@@ -845,6 +916,7 @@ float_to_int j5 (
 );
 
 float_to_int j6 (
+  .ce(CE),
   .a(phi_modo2b_esc), // input [31 : 0] a
   .operation_nd(rdy_phi_modo2b_esc), // input operation_nd
   .clk(clk), // input clk
@@ -853,6 +925,7 @@ float_to_int j6 (
 );
 
 float_to_int j7 (
+  .ce(CE),
   .a(phi_modo1_esc), // input [31 : 0] a
   .operation_nd(rdy_phi_modo1_esc), // input operation_nd
   .clk(clk), // input clk
@@ -870,6 +943,7 @@ float_to_int j7 (
 
 
 resta_float extra1 (
+  .ce(CE),
   .a(tau2_modo2b), // input [31 : 0] a
   .b(pi), // input [31 : 0] b
   .operation_nd(rdy_tau2_modo2b), // input operation_nd
@@ -879,6 +953,7 @@ resta_float extra1 (
 );
 
 mayor_igual_float extra2 (
+  .ce(CE),
   .a(phi_modo2b), // input [31 : 0] a
   .b(r1), // input [31 : 0] b
   .operation_nd(rdy_r1), // input operation_nd
@@ -890,6 +965,7 @@ mayor_igual_float extra2 (
 
 
 mayor_igual_float extra3 (
+  .ce(CE),
   .a(tau2_modo1), // input [31 : 0] a
   .b(phi_modo1), // input [31 : 0] b
   .operation_nd(rdy_phi_modo1), // input operation_nd
@@ -900,36 +976,53 @@ mayor_igual_float extra3 (
 
 
 
-always @(posedge trigger)
+always @(posedge trigger or posedge rst)
 begin
-	if (aux1_positivo && (tau1_modo2a_final < 9'd255)) //preguntar a miguel porque restringe a que sea menor a pi 
+  if  (rst)
   begin
-		tau1 <= tau1_modo2a_final;   
-		tau2 <= tau2_modo2a_final;
-		phi <= phi_modo2a_final;
-		modo <= 2'd0;	
-	end
-	else if ((phi_modo2b_final[8]) && (flag1)) 
-	begin 
-		tau1 <= 9'd255;   
-		tau2 <= tau2_modo2b_final;
-		phi <= phi_modo2b_final;
-		modo <= 2'd1;
-	end
-	else if (aux2_positivo && (~phi_modo1_final[8]) && (flag2)) // es necesario agregar flag 2, ver referencia en verde
-	begin
-		tau1 <= 9'd255;   
-		tau2 <= tau2_modo1_final;
-		phi <= phi_modo1_final;
-		modo <= 2'd2;	
-	end
-	else
-	begin
-		tau1 <= tau1;   
-		tau2 <= tau2;
-		phi <= phi;
-		modo <= 2'd3;	
-	end
+    tau1 <= 9'd255;
+    tau2 <= 9'd147;
+    phi  <= -9'd9;
+    modo <= 2'd0;   
+  end
+  else if (CE)
+  begin
+  	if (aux1_positivo && (tau1_modo2a_final < 9'd255)) //preguntar a miguel porque restringe a que sea menor a pi 
+    begin
+  		tau1 <= tau1_modo2a_final;   
+  		tau2 <= tau2_modo2a_final;
+  		phi <= phi_modo2a_final;
+  		modo <= 2'd0;	
+  	end
+  	else if ((phi_modo2b_final[8]) && (flag1)) 
+  	begin 
+  		tau1 <= 9'd255;   
+  		tau2 <= tau2_modo2b_final;
+  		phi <= phi_modo2b_final;
+  		modo <= 2'd1;
+  	end
+  	else if (aux2_positivo && (~phi_modo1_final[8]) && (flag2)) // es necesario agregar flag 2, ver referencia en verde
+  	begin
+  		tau1 <= 9'd255;   
+  		tau2 <= tau2_modo1_final;
+  		phi <= phi_modo1_final;
+  		modo <= 2'd2;	
+  	end
+  	else
+  	begin
+  		tau1 <= tau1;   
+  		tau2 <= tau2;
+  		phi <= phi;
+  		modo <= 2'd3;	
+  	end
+  end 
+  else
+  begin
+    tau1 <= tau1;   
+    tau2 <= tau2;
+    phi <= phi;
+    modo <= 2'd3;      
+  end 
 end
 
 

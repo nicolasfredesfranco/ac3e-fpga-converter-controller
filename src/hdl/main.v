@@ -22,8 +22,11 @@
 //                      -Valor minimo de deadtime es 1
 //                      -Ojo con la saturacion de valores negativos
 //////////////////////////////////////////////////////////////////////////////////
-module main(clk, t1, t2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger); //<3
-    input clk; // implementar rst de emergencia  
+module main(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger); //<3
+    input clk; // implementar rst de emergencia
+    input CE;
+    input rst;
+    input [27:0] fs_clk;  
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000 
@@ -90,9 +93,9 @@ module main(clk, t1, t2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger); //<3
     end
  
  
-    voltajes signals(clk/*, rst*/, t1_sinc, t2_sinc, phi_sinc, fs_DAB_sinc, sync_sinc, V1, V2, trigger);
+    voltajes signals(clk, CE, rst, fs_clk, t1_sinc, t2_sinc, phi_sinc, fs_DAB_sinc, sync_sinc, V1, V2, trigger);
 
-    switch patrones(clk, deadtime_sinc-8'd1, V1, V2, Sp, Ss);
+    switch patrones(clk, CE, rst, deadtime_sinc-8'd1, V1, V2, Sp, Ss);
 
 
 

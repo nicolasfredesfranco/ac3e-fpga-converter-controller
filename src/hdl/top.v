@@ -18,8 +18,11 @@
 // Additional Comments: 
 //
 ///////////////////////////////////////////////////////////////////////////////////
-module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
-    input clk; // implementar rst de emergencia  
+module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
+    input clk; // implementar rst de emergencia
+    input CE;
+    input rst;
+    input [27:0] fs_clk;  
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000
@@ -88,17 +91,35 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     reg signed [27:0] tau2_cuentas_aux_next;
     reg signed [18:0] phi_cuentas_next;
 
+    /////////////////////////////
+
+    wire [27:0] quotient;
+    wire [27:0] fs_clk_medios;
+
+    div_gen_v3_0_0 magic_number (
+    .ce(CE),
+    .clk(clk), // input clk
+    .rfd(), // output rfd
+    .dividend(fs_clk), // input [27 : 0] dividend
+    .divisor(9'd510), // input [8 : 0] divisor
+    .quotient(quotient), // output [27 : 0] quotient
+    .fractional()); // output [8 : 0] fractional
+
+
+    assign fs_clk_medios = {fs_clk >> 1} ;
+
+    ////////////////////////////
     always@(*) //concatenacion de jaime para poder dividir (complemento a2)
     begin // 196_078 consutar referencia en verde
-        tau1_cuentas_aux_next= (t1*196078);// OJO quizas la division genera problema de timing
+        tau1_cuentas_aux_next= (t1*quotient);// 
         tau1_cuentas_next = (div_tau1_valid) ? div_quo_tau1 : tau1_cuentas;
         //tau1_cuentas_next=tau1_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
         pi_cuentas_next=(div_pi_valid) ? div_quo_pi : pi_cuentas;// el numero debe ser 5*10^7
-        tau2_cuentas_aux_next= (t2*196078);// OJO quizas la division genera problema de timing
+        tau2_cuentas_aux_next= (t2*quotient);// OJO quizas la division genera problema de timing
         tau2_cuentas_next = (div_tau2_valid) ? div_quo_tau2 : tau2_cuentas;
         //tau2_cuentas_next=tau2_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
         //phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
-        phi_cuentas_aux_next=phi*196078;// OJO quizas la division genera problema de timing;
+        phi_cuentas_aux_next=phi*quotient;// OJO quizas la division genera problema de timing;
         phi_cuentas_next = (div_phi_valid) ? div_quo_phi : phi_cuentas;
         //phi_cuentas_next=phi_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing;
     end
@@ -115,6 +136,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     end
 
     div_gen_v4_0_0 DivTau1 (
+      .aclken(CE),
       .aclk(clk),                                           // input aclk
       .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
       .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
@@ -127,6 +149,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     );
     
     div_gen_v4_0_0 DivTau2 (
+      .aclken(CE),
       .aclk(clk),                                           // input aclk
       .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
       .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
@@ -139,6 +162,7 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     );
     
     div_gen_v4_0_0 DivPhi (
+      .aclken(CE),
       .aclk(clk),                                           // input aclk
       .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
       .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
@@ -151,13 +175,14 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     );
 
     div_gen_v4_0_1_pi DivPi (
+      .aclken(CE),
       .aclk(clk),                                           // input aclk
       .s_axis_divisor_tvalid(1'b1),                         // input s_axis_divisor_tvalid
       .s_axis_divisor_tready(),                             // output s_axis_divisor_tready
       .s_axis_divisor_tdata({{5{fs_DAB[18]}},fs_DAB}),      // input [23 : 0] s_axis_divisor_tdata
       .s_axis_dividend_tvalid(1'b1),                        // input s_axis_dividend_tvalid
       .s_axis_dividend_tready(),                            // output s_axis_dividend_tready
-      .s_axis_dividend_tdata(32'd50000000),                 // input [31 : 0] s_axis_dividend_tdata
+      .s_axis_dividend_tdata({{4{fs_clk_medios[27]}},fs_clk_medios}), // input [31 : 0] s_axis_dividend_tdata
       .m_axis_dout_tvalid(div_pi_valid),                    // output m_axis_dout_tvalid
       .m_axis_dout_tdata(div_data_pi)                       // output [55 : 0] m_axis_dout_tdata
     );
@@ -311,19 +336,56 @@ module voltajes(clk/*, rst*/, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     end
 
 
-    always@(posedge clk) //Cuenta para patrones
+    always @(posedge clk or posedge rst)
     begin
-        contador1_next <= contador1;
-        contador2_next <= contador2;
+        if (rst)
+        begin
+            contador1_next <= 19'd0;
+            contador2_next <= 19'd0; 
+        end
+        else
+        begin
+            if (CE)
+            begin
+                contador1_next <= contador1;
+                contador2_next <= contador2;
+            end
+            else
+            begin
+                contador1_next <= contador1_next;
+                contador2_next <= contador2_next;                        
+            end        
+        end
     end
 
 
-    always@(posedge clk)//conmutacion de las maquinas de estadoss   
+
+    always @(posedge clk or posedge rst)
     begin
-        state1 <= state1_next;
-        state2 <= state2_next;
-        state3 <= state3_next;
+        if (rst)
+        begin
+            state1 <= estado1;
+            state2 <= estado1;
+            state3 <= INIT; 
+        end
+        else
+        begin
+            if (CE)
+            begin
+                state1 <= state1_next;
+                state2 <= state2_next;
+                state3 <= state3_next;
+            end
+            else
+            begin
+                state1 <= state1;
+                state2 <= state2;
+                state3 <= state3;                       
+            end        
+        end
     end
+
+
  
 
     //----------- solo para ver en el ociloscopio 

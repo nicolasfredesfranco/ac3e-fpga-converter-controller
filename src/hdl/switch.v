@@ -18,8 +18,10 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module switch(clk, deadtime, V1, V2, Sp, Ss);
-    input clk; // implementar rst de emergencia  
+module switch(clk, CE, rst, deadtime, V1, V2, Sp, Ss);
+    input clk; // implementar rst de emergencia 
+    input CE;
+    input rst; 
     input [7:0] deadtime;
     input signed [1:0] V1, V2;
     output reg [3:0] Sp; //Conmutaciones del primario
@@ -158,13 +160,35 @@ module switch(clk, deadtime, V1, V2, Sp, Ss);
         endcase
 
 
-    always @(posedge clk) 
+
+
+    always @(posedge clk or posedge rst)
     begin
-    	state1 <= state1_next;
-    	state2 <= state2_next;
-    	contador1 <= contador1_next;
-    	contador2 <= contador2_next;
-    end
+        if (rst)
+        begin
+            state1 <= estado_V1;
+            state2 <= estado_V1;
+            contador1 <= 8'd0;
+            contador2 <= 8'd0;
+        end
+        else
+        begin
+            if (CE)
+            begin
+                state1 <= state1_next;
+                state2 <= state2_next;
+                contador1 <= contador1_next;
+                contador2 <= contador2_next;                  
+            end
+            else
+            begin
+                state1 <= state1;
+                state2 <= state2;
+                contador1 <= contador1;
+                contador2 <= contador2; 
+            end
+        end
+    end    
 
 endmodule
 
