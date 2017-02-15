@@ -75,7 +75,47 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
     localparam estado10 = 4'd10;
 
 
+
+//////////tiempo de espera para los calculos, ver referencias de modos en amarillo
+
+    localparam paso1_2a = 8'd3;
+    localparam paso2_2a = 8'd12;
+    localparam paso3_2a = 8'd15;
+    localparam paso4_2a = 8'd24;
+    localparam paso5_2a = 8'd33;
+    localparam paso6_2a = 8'd36;
+    localparam paso7_2a = 8'd76;
+    localparam paso8_2a = 8'd85;
+    localparam paso9_2a = 8'd100;
+
+
+
+    localparam paso1_2b = 8'd10;
+    localparam paso2_2b = 8'd20;
+    localparam paso3_2b = 8'd35;
+    localparam paso4_2b = 8'd45;
+    localparam paso5_2b = 8'd60;
+    localparam paso6_2b = 8'd90;
+    localparam paso7_2b = 8'd100;
+
+
+
+    localparam paso1_1 = 8'd10;
+    localparam paso2_1 = 8'd20;
+    localparam paso3_1 = 8'd30;
+    localparam paso4_1 = 8'd40;
+    localparam paso5_1 = 8'd45;
+    localparam paso6_1 = 8'd50;
+    localparam paso7_1 = 8'd90;
+    localparam paso8_1 = 8'd100;
+
+
+//////////////
+
+
+
     reg [3:0] state1, state2, state3, state1_next, state2_next, state3_next;
+    reg [7:0] contador1, contador2, contador3, contador1_next, contador2_next, contador3_next;
     
 
     
