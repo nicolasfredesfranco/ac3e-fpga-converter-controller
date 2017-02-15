@@ -1057,11 +1057,11 @@ always@(*)// maquina de estados para el voltaje V2
                         state3 = (contador3_next >= paso1_1)? estado2 :estado1;
                         contador3 = contador3_next + 8'd1;
 
-                        k0 = k0_next;
-                        k1 = k1_next;
-                        k2 = k2_next;
+                        k0 = Vdc2*razon_vueltas;
+                        k1 = -c2*fs_DAB_fixed;
+                        k2 = pi*Vdc1;
                         k3 = k3_next;
-                        k4 = k4_next;
+                        k4 = fs_DAB_fixed*Iref;
                         k5 = k5_next;
                         k6 = k6_next;
                         k7 = k7_next;
@@ -1086,9 +1086,9 @@ always@(*)// maquina de estados para el voltaje V2
                         k0 = k0_next;
                         k1 = k1_next;
                         k2 = k2_next;
-                        k3 = k3_next;
+                        k3 = k2_next_chico + k1_next_chico;
                         k4 = k4_next;
-                        k5 = k5_next;
+                        k5 = dout3_tdata_chico;
                         k6 = k6_next;
                         k7 = k7_next;
                         k8 = k8_next;
@@ -1101,9 +1101,9 @@ always@(*)// maquina de estados para el voltaje V2
                         phi_modo1 = phi_modo1_next;
 
                         divisor3_tvalid = 1'b1;
-                        divisor3_tdata = ;
+                        divisor3_tdata = k0_next_chico[32:-31];
                         dividend3_tvalid = 1'b1;
-                        dividend3_tdata = ;            
+                        dividend3_tdata = k4_next_chico[32:-31];            
                     end  
         estado3:    begin
                         state3 = (contador3_next >= paso3_1)? estado4 :estado3;
@@ -1115,7 +1115,7 @@ always@(*)// maquina de estados para el voltaje V2
                         k3 = k3_next;
                         k4 = k4_next;
                         k5 = k5_next;
-                        k6 = k6_next;
+                        k6 = -k5_next*dos_pi2L;
                         k7 = k7_next;
                         k8 = k8_next;
                         k9 = k9_next;
@@ -1123,13 +1123,13 @@ always@(*)// maquina de estados para el voltaje V2
                         k11 = k11_next;
                         aux2 = aux2_next;
 
-                        tau2_modo1 = tau2_modo1_next;
+                        tau2_modo1 = dout3_tdata_chico;
                         phi_modo1 = phi_modo1_next;
 
                         divisor3_tvalid = 1'b1;
-                        divisor3_tdata = ;
+                        divisor3_tdata = k0_next_chico[32:-31];
                         dividend3_tvalid = 1'b1;
-                        dividend3_tdata = ;
+                        dividend3_tdata = k3_next[32:-31];
                         
                     end        
         estado4:    begin
@@ -1143,8 +1143,8 @@ always@(*)// maquina de estados para el voltaje V2
                         k4 = k4_next;
                         k5 = k5_next;
                         k6 = k6_next;
-                        k7 = k7_next;
-                        k8 = k8_next;
+                        k7 = pi_medio*tau2_modo1_next;
+                        k8 = tau2_modo1_next*tau2_modo1_next;
                         k9 = k9_next;
                         k10 = k10_next;
                         k11 = k11_next;
@@ -1172,8 +1172,8 @@ always@(*)// maquina de estados para el voltaje V2
                         k6 = k6_next;
                         k7 = k7_next;
                         k8 = k8_next;
-                        k9 = k9_next;
-                        k10 = k10_next;
+                        k9 = k7_next_chico + k6_next_chico;
+                        k10 = (k8_next_chico>>2);
                         k11 = k11_next;
                         aux2 = aux2_next;
 
@@ -1202,7 +1202,7 @@ always@(*)// maquina de estados para el voltaje V2
                         k9 = k9_next;
                         k10 = k10_next;
                         k11 = k11_next;
-                        aux2 = aux2_next;
+                        aux2 = k9_next - k10_next;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -1228,7 +1228,7 @@ always@(*)// maquina de estados para el voltaje V2
                         k8 = k8_next;
                         k9 = k9_next;
                         k10 = k10_next;
-                        k11 = k11_next;
+                        k11 = (tau2_modo1_next>>1);
                         aux2 = aux2_next;
 
                         tau2_modo1 = tau2_modo1_next;
@@ -1259,7 +1259,7 @@ always@(*)// maquina de estados para el voltaje V2
                         aux2 = aux2_next;
 
                         tau2_modo1 = tau2_modo1_next;
-                        phi_modo1 = phi_modo1_next;
+                        phi_modo1 = k11_next - sqrt2_next;
 
                         divisor3_tvalid = 1'b0;
                         divisor3_tdata = divisor3_tdata_next;
@@ -1495,6 +1495,7 @@ end
 wire aux2_positivo;
 assign aux2_positivo = ~(aux2_next[64]);
 
+/////////////////////////
 
 
 
