@@ -25,11 +25,15 @@ module great_top(clk, CE, rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, 
     input CE;
     input rst;
     input sync;
-    input signed [13:0] Vdc1, Vdc2, Iref;
+    input signed [bits_enteros:-bits_decimal] Vdc1, Vdc2, Iref;
     output trigger;
     output Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4;
     output [1:0] modo; //se puede dejar como wire al aire 
 
+
+
+    localparam bits_enteros = 32;
+    localparam bits_decimal = 32;
 
     wire [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
     wire [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)
@@ -54,8 +58,6 @@ module great_top(clk, CE, rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, 
 
     main actuador(clk, CE, rst, fs_clk, tau1, tau2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger);
 
-
-    controlador calculador(clk, CE, rst, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
-
+    controlador2 calculador(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
 
 endmodule
