@@ -1495,34 +1495,47 @@ end
 wire aux2_positivo;
 assign aux2_positivo = ~(aux2_next[64]);
 
-/////////////////////////
+///////////////////////////////////////////////////////////
 
 
 
 
 
 
+always @(*)
+begin
+    flag1 = phi_modo2b_next - tau2_modo2b_next + pi;
+    flag2 = tau2_modo1_next - phi_modo1_next;
+end
+
+reg signed [bits_enteros:-bits_decimal] flag1, flag2;
+
+reg signed [8:0] tau1_modo2a_adaptado, tau2_modo2a_adaptado, phi_modo2a_adaptado, tau2_modo2b_adaptado, phi_modo2b_adaptado, tau2_modo1_adaptado, phi_modo1_adaptado;
+reg signed [2*bits_enteros:-2*bits_decimal] tau1_modo2a_inter, tau2_modo2a_inter, phi_modo2a_inter, tau2_modo2b_inter, phi_modo2b_inter, tau2_modo1_inter, phi_modo1_inter;
+
+always @(*)
+begin
+    tau1_modo2a_inter = escalado*tau1_modo2a_next;
+    tau2_modo2a_inter = escalado*tau2_modo2a_next;
+    phi_modo2a_inter = escalado*phi_modo2a_next;
+    tau2_modo2b_inter = escalado*tau2_modo2b_next;
+    phi_modo2b_inter = escalado*phi_modo2b_next;
+    tau2_modo1_inter = escalado*tau2_modo1_next;
+    phi_modo1_inter = escalado*phi_modo1_next; 
+end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////areglar esto
+always @(*)
+begin
+    tau1_modo2a_adaptado = {tau1_modo2a_inter[64],tau1_modo2a_inter[7:0]};
+    tau2_modo2a_adaptado = {tau2_modo2a_inter[64],tau2_modo2a_inter[7:0]};
+    phi_modo2a_adaptado = {phi_modo2a_inter[64],phi_modo2a_inter[7:0]};
+    tau2_modo2b_adaptado = {tau2_modo2b_inter[64],tau2_modo2b_inter[7:0]};
+    phi_modo2b_adaptado = {phi_modo2b_inter[64],phi_modo2b_inter[7:0]};
+    tau2_modo1_adaptado = {tau2_modo1_inter[64],tau2_modo1_inter[7:0]};
+    phi_modo1_adaptado = {phi_modo1_inter[64],phi_modo1_inter[7:0]};
+end
 
 
 always @(posedge trigger or posedge rst)
@@ -1536,25 +1549,25 @@ begin
   end
   else if (CE)
   begin
-    if (aux1_positivo && (tau1_modo2a_final < 9'd255)) //preguntar a miguel porque restringe a que sea menor a pi 
+    if (aux1_positivo && (tau1_modo2a_final < pi)) //preguntar a miguel porque restringe a que sea menor a pi 
     begin
-        tau1 <= tau1_modo2a_final;   
-        tau2 <= tau2_modo2a_final;
-        phi <= phi_modo2a_final;
+        tau1 <= tau1_modo2a_adaptado;   
+        tau2 <= tau2_modo2a_adaptado;
+        phi <= phi_modo2a_adaptado;
         modo <= 2'd0;   
     end
-    else if ((phi_modo2b_final[8]) && (flag1)) 
+    else if ((phi_modo2b_next[32]) && (~flag1[32])) 
     begin 
         tau1 <= 9'd255;   
-        tau2 <= tau2_modo2b_final;
-        phi <= phi_modo2b_final;
+        tau2 <= tau2_modo2b_adaptado;
+        phi <= phi_modo2b_adaptado;
         modo <= 2'd1;
     end
-    else if (aux2_positivo && (~phi_modo1_final[8]) && (flag2)) // es necesario agregar flag 2, ver referencia en verde
+    else if (aux2_positivo && (~phi_modo1_next[32]) && (~flag2[32])) // es necesario agregar flag 2, ver referencia en verde
     begin
         tau1 <= 9'd255;   
-        tau2 <= tau2_modo1_final;
-        phi <= phi_modo1_final;
+        tau2 <= tau2_modo1_adaptado;
+        phi <= phi_modo1_adaptado;
         modo <= 2'd2;   
     end
     else
