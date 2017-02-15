@@ -102,7 +102,7 @@ divisor caja1 (
 ///////////////////////////////////////////////////////////////////////////////////////machine state 1   asociada al modo 2a
 
 fixed_to_float caja2 (
-  .a(aux1[32:-31]), // input [63 : 0] a
+  .a(aux1_next[32:-31]), // input [63 : 0] a
   .operation_nd(calcular_sqrt1), // input operation_nd
   .clk(clk), // input clk
   .ce(CE), // input ce
@@ -1025,21 +1025,475 @@ divisor caja5 (
 
 
 
+always@(*)// maquina de estados para el voltaje V2
+        case(state3_next)
+        INIT:    begin 
+                        state3 = (sync)? estado1 : INIT;//ojo con la comparacion
+                        contador3 = 8'd0;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                    end
+        estado1:    begin
+                        state3 = (contador3_next >= paso1_1)? estado2 :estado1;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                    end
+        estado2:    begin
+                        state3 = (contador3_next >= paso2_1)? estado3 :estado2;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b1;
+                        divisor3_tdata = ;
+                        dividend3_tvalid = 1'b1;
+                        dividend3_tdata = ;            
+                    end  
+        estado3:    begin
+                        state3 = (contador3_next >= paso3_1)? estado4 :estado3;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b1;
+                        divisor3_tdata = ;
+                        dividend3_tvalid = 1'b1;
+                        dividend3_tdata = ;
+                        
+                    end        
+        estado4:    begin
+                        state3 = (contador3_next >= paso4_1)? estado5 :estado4;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                        
+                    end    
+        estado5:    begin
+                        state3 = (contador3_next >= paso5_1)? estado6 :estado5;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                        
+                    end    
+        estado6:    begin
+                        state3 = (contador3_next >= paso6_1)? ((aux2_positivo)? estado7 : estado9) : estado6 ;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                        
+                    end 
+        estado7:    begin
+                        state3 = (contador3_next >= paso7_1)? estado8 :estado7;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                        
+                    end
+        estado8:    begin
+                        state3 = (contador3_next >= paso8_1)? estado9 :estado8;
+                        contador3 = contador3_next + 8'd1;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                        
+                    end                         
+        estado9:    begin
+                        state3 = estado1;
+                        contador3 = 8'd0;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;
+                    end     
+        default:    begin
+                        state3 = estado1;
+                        contador3 = 8'd0;
+
+                        k0 = k0_next;
+                        k1 = k1_next;
+                        k2 = k2_next;
+                        k3 = k3_next;
+                        k4 = k4_next;
+                        k5 = k5_next;
+                        k6 = k6_next;
+                        k7 = k7_next;
+                        k8 = k8_next;
+                        k9 = k9_next;
+                        k10 = k10_next;
+                        k11 = k11_next;
+                        aux2 = aux2_next;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+
+                        divisor3_tvalid = 1'b0;
+                        divisor3_tdata = divisor3_tdata_next;
+                        dividend3_tvalid = 1'b0;
+                        dividend3_tdata = dividend3_tdata_next;   
+                    end
+        endcase
+    
+
+    always @(posedge clk or posedge rst)
+    begin
+        if (rst)                                              ///arreglar lo que se hace aqui 
+        begin
+            state3_next <= estado1;
+            contador3_next <= 8'd0;
+
+            k0_next <=  k0_next;
+            k1_next <=  k1_next;
+            k2_next <=  k2_next;
+            k3_next <=  k3_next;
+            k4_next <=  k4_next;
+            k5_next <=  k5_next;
+            k6_next <=  k6_next;
+            k7_next <=  k7_next;
+            k8_next <=  k8_next;
+            k9_next <=  k9_next;
+            k10_next <= k10_next;
+            k11_next <= k11_next;
+            aux2_next <= aux2_next;
+
+            tau2_modo1_next <= tau2_modo1_next;
+            phi_modo1_next <= phi_modo1_next;
+
+            divisor3_tdata_next <= divisor3_tdata_next;
+            dividend3_tdata_next <= dividend3_tdata_next;
+        end
+        else if (CE)
+        begin
+            state3_next <= state3;
+            contador3_next <= contador3;
+
+            k0_next <=  k0 ;
+            k1_next <=  k1 ;
+            k2_next <=  k2 ;
+            k3_next <=  k3 ;
+            k4_next <=  k4 ;
+            k5_next <=  k5 ;
+            k6_next <=  k6 ;
+            k7_next <=  k7 ;
+            k8_next <=  k8 ;
+            k9_next <=  k9 ;
+            k10_next <= k10;
+            k11_next <= k11;
+            aux2_next <= aux2;
+
+            tau2_modo1_next <= tau2_modo1;
+            phi_modo1_next <= phi_modo1;
+
+            divisor3_tdata_next <= divisor3_tdata;
+            dividend3_tdata_next <= dividend3_tdata;  
+        end
+        else
+        begin
+            state3_next <= state3_next;
+            contador3_next <= contador3_next;
+
+            k0_next <=  k0_next;
+            k1_next <=  k1_next;
+            k2_next <=  k2_next;
+            k3_next <=  k3_next;
+            k4_next <=  k4_next;
+            k5_next <=  k5_next;
+            k6_next <=  k6_next;
+            k7_next <=  k7_next;
+            k8_next <=  k8_next;
+            k9_next <=  k9_next;
+            k10_next <= k10_next;
+            k11_next <= k11_next;
+            aux2_next <= aux2_next;
+
+            tau2_modo1_next <= tau2_modo1_next;
+            phi_modo1_next <= phi_modo1_next;
+
+            divisor3_tdata_next <= divisor3_tdata_next;
+            dividend3_tdata_next <= dividend3_tdata_next;  
+        end
+    end
+
+
+    always @(*)
+    begin
+        k0_next_chico = k0_next[bits_enteros:-bits_decimal];
+        k1_next_chico = k1_next[bits_enteros:-bits_decimal];
+        k2_next_chico = k2_next[bits_enteros:-bits_decimal];
+        k4_next_chico = k4_next[bits_enteros:-bits_decimal];
+        k6_next_chico = k6_next[bits_enteros:-bits_decimal];
+        k7_next_chico = k7_next[bits_enteros:-bits_decimal];
+        k8_next_chico = k8_next[bits_enteros:-bits_decimal];
+    end
+
+    reg signed [2*bits_enteros:-2*bits_decimal] k0, k1, k2, k4, k6, k7, k8, k0_next, k1_next, k2_next, k4_next, k6_next, k7_next, k8_next;
+
+    reg signed [bits_enteros:-bits_decimal]  k0_next_chico, k1_next_chico, k2_next_chico, k4_next_chico, k6_next_chico, k7_next_chico, k8_next_chico;
+
+    reg signed [bits_enteros:-bits_decimal] aux2, aux2_next, k3, k5, k9, k10, k11, k3_next, k5_next, k9_next, k10_next, k11_next;
+
+    reg signed [bits_enteros:-bits_decimal] tau2_modo1_next, tau2_modo1, phi_modo1_next, phi_modo1;
+
+
+    reg divisor3_tvalid, dividend3_tvalid;
+    wire dout3_tvalid;
+    wire signed [95 : 0] dout3_tdata;
+    wire signed [bits_enteros:-bits_decimal] dout3_tdata_chico;
+    reg  signed [63 : 0] divisor3_tdata, dividend3_tdata, divisor3_tdata_next, dividend3_tdata_next;
+
+    assign dout3_tdata_chico = {dout3_tdata[95],dout3_tdata[63:0]};
+
+divisor caja6 (
+  .aclk(clk), // input aclk
+  .aclken(CE), // input aclken
+  .s_axis_divisor_tvalid(divisor3_tvalid), // input s_axis_divisor_tvalid
+  .s_axis_divisor_tdata(divisor3_tdata_next), // input [63 : 0] s_axis_divisor_tdata
+  .s_axis_dividend_tvalid(dividend3_tvalid), // input s_axis_dividend_tvalid
+  .s_axis_dividend_tdata(dividend3_tdata_next), // input [63 : 0] s_axis_dividend_tdata
+  .m_axis_dout_tvalid(dout3_tvalid), // output m_axis_dout_tvalid
+  .m_axis_dout_tdata(dout3_tdata) // output [95 : 0] m_axis_dout_tdata
+);
 
 
 
+fixed_to_float caja7 (
+  .a(aux2_next[32:-31]), // input [63 : 0] a
+  .operation_nd(calcular_sqrt2), // input operation_nd
+  .clk(clk), // input clk
+  .ce(CE), // input ce
+  .result(aux2_float), // output [31 : 0] result
+  .rdy(rdy_aux2_float) // output rdy
+);
 
 
+sqrt_in_float caja8 (
+  .a(aux2_float), // input [31 : 0] a
+  .operation_nd(rdy_aux2_float), // input operation_nd
+  .clk(clk), // input clk
+  .ce(CE), // input ce
+  .result(sqrt2_float), // output [31 : 0] result
+  .invalid_op(invalid_op_sqrt2), // output invalid_op
+  .rdy(rdy_sqrt2_float) // output rdy
+);
 
 
+float_to_fixed caja9 (
+  .a(sqrt2_float), // input [31 : 0] a
+  .operation_nd(rdy_sqrt2_float), // input operation_nd
+  .clk(clk), // input clk
+  .ce(CE), // input ce
+  .result(sqrt2_corto), // output [63 : 0] result
+  .rdy(rdy_sqrt2_corto) // output rdy
+);
 
+assign  calcular_sqrt2 = (state1_next==estado7)? 1'b1 : 1'b0;
 
+wire calcular_sqrt2, rdy_aux2_float, rdy_sqrt2_float, rdy_sqrt2_corto, invalid_op_sqrt2;
+wire [31:0] aux2_float, sqrt2_float;
+wire [63 : 0] sqrt2_corto;
+reg signed [bits_enteros:-bits_decimal] sqrt2_next;
 
+always @(posedge clk)
+begin
+    if (rdy_sqrt2_corto) 
+    begin
+        sqrt2_next <= {sqrt2_corto,1'b0};    
+    end
+    else
+    begin
+        sqrt2_next <= sqrt2_next ;
+    end
+end
 
-
-
-
-
+wire aux2_positivo;
+assign aux2_positivo = ~(aux2_next[64]);
 
 
 
