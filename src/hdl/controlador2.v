@@ -339,14 +339,14 @@ float_to_fixed caja10 (
                         phi_modo2a = phi_modo2a_next;
 
                         divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        dividendo = dividendo_next;
                     end
         estado1:    begin
                         state1 = (contador1_next >= paso1)? estado2 :estado1;
                         contador1 = contador1_next + 8'd1;
 
-                        Vdc2p     =   Vdc2p_next; 
-                        n0        =   n0_next;
+                        Vdc2p     =   Vdc2*razon_vueltas; 
+                        n0        =   division;
                         resta     =   resta_next; 
                         n4        =   n4_next;
                         d_inv     =   d_inv_next; 
@@ -370,8 +370,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = Vdc2;
+                        dividendo = Vdc1;
                     end
         estado2:    begin
                         state1 = (contador1_next >= paso2)? estado3 :estado2;
@@ -379,9 +379,9 @@ float_to_fixed caja10 (
 
                         Vdc2p     =   Vdc2p_next; 
                         n0        =   n0_next;
-                        resta     =   resta_next; 
-                        n4        =   n4_next;
-                        d_inv     =   d_inv_next; 
+                        resta     =   Vdc2p_next - Vdc1; 
+                        n4        =   n2_chico*n0_next;
+                        d_inv     =   n0_next*razon_vueltas_inv; 
                         n3        =   n3_next;
                         n6        =   n6_next;
                         n9        =   n9_next;
@@ -402,8 +402,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;              
+                        divisor = Vdc2p_chico;
+                        dividendo = k4_chico;              
                     end  
         estado3:    begin
                         state1 = (contador1_next >= paso3)? estado4 :estado3;
@@ -414,10 +414,10 @@ float_to_fixed caja10 (
                         resta     =   resta_next; 
                         n4        =   n4_next;
                         d_inv     =   d_inv_next; 
-                        n3        =   n3_next;
-                        n6        =   n6_next;
-                        n9        =   n9_next;
-                        uno_d_inv =   uno_d_inv_next;
+                        n3        =   resta*n1_chico;
+                        n6        =   cuatro_piL*fs_DAB_fixed;
+                        n9        =   c1*fs_DAB_fixed;
+                        uno_d_inv =   uno - d_inv_chico;
                         n5        =   n5_next;
                         d         =   d_next;
                         f4        =   f4_next;
@@ -434,8 +434,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = Vdc2p_chico;
+                        dividendo = k3_next;
                         
                     end        
         estado4:    begin
@@ -451,7 +451,7 @@ float_to_fixed caja10 (
                         n6        =   n6_next;
                         n9        =   n9_next;
                         uno_d_inv =   uno_d_inv_next;
-                        n5        =   n5_next;
+                        n5        =   n3_chico*n4_chico;
                         d         =   d_next;
                         f4        =   f4_next;
                         n11       =   n11_next;
@@ -467,8 +467,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = Vdc1;
+                        dividendo = Vdc2p_chico;
                         
                     end    
         estado5:    begin
@@ -486,8 +486,8 @@ float_to_fixed caja10 (
                         uno_d_inv =   uno_d_inv_next;
                         n5        =   n5_next;
                         d         =   d_next;
-                        f4        =   f4_next;
-                        n11       =   n11_next;
+                        f4        =   division;
+                        n11       =   Ipc*uno_d_inv_next;
                         aux1      =   aux1_next; 
                         n12       =   n12_next; 
                         n7        =   n7_next;   
@@ -500,8 +500,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = k1_chico;
+                        dividendo = n5_chico;
                         
                     end    
         estado6:    begin
@@ -521,8 +521,8 @@ float_to_fixed caja10 (
                         d         =   d_next;
                         f4        =   f4_next;
                         n11       =   n11_next;
-                        aux1      =   aux1_next; 
-                        n12       =   n12_next; 
+                        aux1      =   f1 + f4_next; 
+                        n12       =   n11_chico + razon_vueltas_inv; 
                         n7        =   n7_next;   
                         n8        =   n8_next; 
                         n13       =   n13_next; 
@@ -533,8 +533,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = g6_chico;
+                        dividendo = g8_chico;
                         
                     end 
         estado7:    begin
@@ -556,7 +556,7 @@ float_to_fixed caja10 (
                         n11       =   n11_next;
                         aux1      =   aux1_next; 
                         n12       =   n12_next; 
-                        n7        =   n7_next;   
+                        n7        =   division;   
                         n8        =   n8_next; 
                         n13       =   n13_next; 
                         h4        =   h4_next; 
@@ -566,8 +566,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = resta;
+                        dividendo = n6_chico;
                         
                     end    
         estado8:    begin
@@ -590,17 +590,17 @@ float_to_fixed caja10 (
                         aux1      =   aux1_next; 
                         n12       =   n12_next; 
                         n7        =   n7_next;   
-                        n8        =   n8_next; 
-                        n13       =   n13_next; 
-                        h4        =   h4_next; 
-                        n10       =   n10_next; 
+                        n8        =   d_next*n7_next; 
+                        n13       =   sqrt1_next + n12_next; 
+                        h4        =   razon_vueltas_inv + sqrt1_next; 
+                        n10       =   division; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        divisor = Vdc1;
+                        dividendo = n9_chico;
                     end    
         
         estado9:    begin
@@ -628,12 +628,12 @@ float_to_fixed caja10 (
                         h4        =   h4_next; 
                         n10       =   n10_next; 
 
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
+                        tau1_modo2a = n7_next* n13_next;
+                        tau2_modo2a = n7_next*h4_next;
+                        phi_modo2a = 38'd0 - n10_next;
 
                         divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        dividendo = dividendo_next;
                         
                     end    
         
@@ -667,7 +667,7 @@ float_to_fixed caja10 (
                         phi_modo2a = phi_modo2a_next;
 
                         divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        dividendo = dividendo_next;
                     end    
         estado_espera:    begin
                         state1 = (contador1_next >= paso9)? estado10 :estado_espera;
@@ -699,7 +699,7 @@ float_to_fixed caja10 (
                         phi_modo2a = phi_modo2a_next;
 
                         divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        dividendo = dividendo_next;
                         
                     end    
 
@@ -733,7 +733,7 @@ float_to_fixed caja10 (
                         phi_modo2a = phi_modo2a_next;
 
                         divisor = divisor_next;
-                        dividendo = dividend1_tdata_next;
+                        dividendo = dividendo_next;
                         
                     end
         endcase
@@ -771,6 +771,9 @@ float_to_fixed caja10 (
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
             phi_modo2a_next <= phi_modo2a_next;
+
+            divisor_next <= divisor_next;
+            dividendo_next <= dividendo_next;
         end
         else if (CE)
         begin
@@ -801,6 +804,9 @@ float_to_fixed caja10 (
             tau1_modo2a_next <= tau1_modo2a;
             tau2_modo2a_next <= tau2_modo2a;
             phi_modo2a_next <= phi_modo2a;
+
+            divisor_next <= divisor;
+            dividendo_next <= dividendo;
         end
         else
         begin
@@ -831,6 +837,9 @@ float_to_fixed caja10 (
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
             phi_modo2a_next <= phi_modo2a_next;
+
+            divisor_next <= divisor_next;
+            dividendo_next <= dividendo_next;
         end
     end
 
@@ -888,9 +897,9 @@ float_to_fixed caja10 (
         estado1:    begin
                         state2 = (contador1_next >= paso1)? estado2 :estado1;
 
-                        k2  = k2_next; 
-                        n2  = n2_next; 
-                        n1  = n1_next; 
+                        k2  = pi*Vdc1; 
+                        n2  = pi*Ipc; 
+                        n1  = Iref*razon_vueltas_inv; 
                         g8  = g8_next; 
                         g6  = g6_next; 
                         g5  = g5_next; 
@@ -907,7 +916,7 @@ float_to_fixed caja10 (
                         k2  = k2_next; 
                         n2  = n2_next; 
                         n1  = n1_next; 
-                        g8  = g8_next; 
+                        g8  = Iref*k4_chico; 
                         g6  = g6_next; 
                         g5  = g5_next; 
                         g10 = g10_next;
@@ -928,7 +937,7 @@ float_to_fixed caja10 (
                         g10 = g10_next;
                         g9  = g9_next; 
                         
-                        tau2_modo2b = tau2_modo2b_next;
+                        tau2_modo2b = division;
                         phi_modo2b = phi_modo2b_next;
                         
                     end        
@@ -939,8 +948,8 @@ float_to_fixed caja10 (
                         n2  = n2_next; 
                         n1  = n1_next; 
                         g8  = g8_next; 
-                        g6  = g6_next; 
-                        g5  = g5_next; 
+                        g6  = tau2_modo2b_next*Vdc2p_chico; 
+                        g5  = (tau2_modo2b_next>>1); 
                         g10 = g10_next;
                         g9  = g9_next; 
                         
@@ -957,7 +966,7 @@ float_to_fixed caja10 (
                         g8  = g8_next; 
                         g6  = g6_next; 
                         g5  = g5_next; 
-                        g10 = g10_next;
+                        g10 = g5_next - pi_medio;
                         g9  = g9_next; 
                         
                         tau2_modo2b = tau2_modo2b_next;
@@ -974,7 +983,7 @@ float_to_fixed caja10 (
                         g6  = g6_next; 
                         g5  = g5_next; 
                         g10 = g10_next;
-                        g9  = g9_next; 
+                        g9  = division; 
                         
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
@@ -993,7 +1002,7 @@ float_to_fixed caja10 (
                         g9  = g9_next; 
                         
                         tau2_modo2b = tau2_modo2b_next;
-                        phi_modo2b = phi_modo2b_next;
+                        phi_modo2b = g9_next + g10_next;
                         
                     end      
         estado10:   begin
@@ -1157,8 +1166,8 @@ float_to_fixed caja10 (
         estado1:    begin
                         state3 = (contador1_next >= paso1)? estado2 :estado1;
 
-                        k1   = k1_next;  
-                        k4   = k4_next;  
+                        k1   = c2*fs_DAB_fixed;  
+                        k4   = dos_pi2L*fs_DAB_fixed;  
                         k5   = k5_next;  
                         k3   = k3_next;  
                         k6   = k6_next;  
@@ -1179,8 +1188,8 @@ float_to_fixed caja10 (
 
                         k1   = k1_next;  
                         k4   = k4_next;  
-                        k5   = k5_next;  
-                        k3   = k3_next;  
+                        k5   = division;  
+                        k3   = k2_chico - k1_chico;  
                         k6   = k6_next;  
                         k7   = k7_next;  
                         k8   = k8_next;  
@@ -1200,7 +1209,7 @@ float_to_fixed caja10 (
                         k4   = k4_next;  
                         k5   = k5_next;  
                         k3   = k3_next;  
-                        k6   = k6_next;  
+                        k6   = k5_next*Iref;  
                         k7   = k7_next;  
                         k8   = k8_next;  
                         k9   = k9_next;  
@@ -1209,7 +1218,7 @@ float_to_fixed caja10 (
                         k11  = k11_next;  
 
 
-                        tau2_modo1 = tau2_modo1_next;
+                        tau2_modo1 = division;
                         phi_modo1 = phi_modo1_next; 
                     end        
         estado4:    begin
@@ -1220,8 +1229,8 @@ float_to_fixed caja10 (
                         k5   = k5_next;  
                         k3   = k3_next;  
                         k6   = k6_next;  
-                        k7   = k7_next;  
-                        k8   = k8_next;  
+                        k7   = pi_medio*tau2_modo1_next;  
+                        k8   = tau2_modo1_next*tau2_modo1_next;  
                         k9   = k9_next;  
                         k10  = k10_next;  
                         aux2 = aux2_next;  
@@ -1241,8 +1250,8 @@ float_to_fixed caja10 (
                         k6   = k6_next;  
                         k7   = k7_next;  
                         k8   = k8_next;  
-                        k9   = k9_next;  
-                        k10  = k10_next;  
+                        k9   = k7_chico - k6_chico;  
+                        k10  = (k8_chico>>2);  
                         aux2 = aux2_next;  
                         k11  = k11_next;  
 
@@ -1263,7 +1272,7 @@ float_to_fixed caja10 (
                         k8   = k8_next;  
                         k9   = k9_next;  
                         k10  = k10_next;  
-                        aux2 = aux2_next;  
+                        aux2 = k9_next - k10_next;  
                         k11  = k11_next;  
 
 
@@ -1284,7 +1293,7 @@ float_to_fixed caja10 (
                         k9   = k9_next;  
                         k10  = k10_next;  
                         aux2 = aux2_next;  
-                        k11  = k11_next;  
+                        k11  = (tau2_modo1_next>>1);  
 
 
                         tau2_modo1 = tau2_modo1_next;
@@ -1308,7 +1317,7 @@ float_to_fixed caja10 (
 
 
                         tau2_modo1 = tau2_modo1_next;
-                        phi_modo1 = phi_modo1_next;
+                        phi_modo1 = k11_next - sqrt2_next;
 
                     end    
         
