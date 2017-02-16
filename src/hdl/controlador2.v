@@ -116,6 +116,30 @@ reg signed [bits_enteros:-bits_decimal] sqrt2_next;
 
 
 
+    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p, n4, d_inv, n3, n6, n9, n5, n11, n8;
+    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p_next, n4_next, d_inv_next, n3_next, n6_next, n9_next, n5_next, n11_next, n8_next;
+
+    reg signed [bits_enteros:-bits_decimal] n0, resta, uno_d_inv, d, f4, aux1, n12, n7, n13, h4, n10;
+    reg signed [bits_enteros:-bits_decimal] n0_next, resta_next, uno_d_inv_next, d_next, f4_next, aux1_next, n12_next, n7_next, n13_next, h4_next, n10_next;
+
+    reg signed [bits_enteros:-bits_decimal] Vdc2p_chico, n4_chico, d_inv_chico, n3_chico, n6_chico, n9_chico, n5_chico, n11_chico, n8_chico, tau1_modo2a_final, tau2_modo2a_final, phi_modo2a_final;
+
+    reg signed [2*bits_enteros:-2*bits_decimal] tau1_modo2a, tau2_modo2a, tau1_modo2a_next, tau2_modo2a_next;
+
+    reg signed [bits_enteros:-bits_decimal] phi_modo2a, phi_modo2a_next;
+
+      reg signed [bits_enteros:-bits_decimal] tau2_modo2b, tau2_modo2b_next, phi_modo2b, phi_modo2b_next;
+
+       reg signed [bits_enteros:-bits_decimal] tau2_modo1, tau2_modo1_next, phi_modo1, phi_modo1_next;
+
+    reg signed [2*bits_enteros:-2*bits_decimal] k1, k4, k6, k7, k8;
+    reg signed [2*bits_enteros:-2*bits_decimal] k1_next, k4_next, k6_next, k7_next, k8_next;
+
+    reg signed [bits_enteros:-bits_decimal] k5, k3, k9, k10, aux2, k11;
+    reg signed [bits_enteros:-bits_decimal] k5_next, k3_next, k9_next, k10_next, aux2_next, k11_next;
+
+    reg signed [bits_enteros:-bits_decimal] k1_chico, k4_chico, k6_chico, k7_chico, k8_chico;
+
 
 ///////////////////////////
 
@@ -296,14 +320,6 @@ float_to_fixed caja10 (
 
 ///////////////////////////////////////////////////////////////////////////////////////machine state 1   asociada al modo 2a
 
-
-    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p, n4, d_inv, n3, n6, n9, n5, n11, n8;
-    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p_next, n4_next, d_inv_next, n3_next, n6_next, n9_next, n5_next, n11_next, n8_next;
-
-    reg signed [bits_enteros:-bits_decimal] n0, resta, uno_d_inv, d, f4, aux1, n12, n7, n13, h4, n10;
-    reg signed [bits_enteros:-bits_decimal] n0_next, resta_next, uno_d_inv_next, d_next, f4_next, aux1_next, n12_next, n7_next, n13_next, h4_next, n10_next;
-
-    reg signed [bits_enteros:-bits_decimal] Vdc2p_chico, n4_chico, d_inv_chico, n3_chico, n6_chico, n9_chico, n5_chico, n11_chico, n8_chico, tau1_modo2a_final, tau2_modo2a_final, phi_modo2a_final;
 
 ////
     always@(*)// maquina de estados para el voltaje V2
@@ -1130,15 +1146,6 @@ float_to_fixed caja10 (
 
 
 ///////////////////////////////////////////////////////////////////////machine state 3      asociada al modo 1
-
-
-    reg signed [2*bits_enteros:-2*bits_decimal] k1, k4, k6, k7, k8;
-    reg signed [2*bits_enteros:-2*bits_decimal] k1_next, k4_next, k6_next, k7_next, k8_next;
-
-    reg signed [bits_enteros:-bits_decimal] k5, k3, k9, k10, aux2, k11;
-    reg signed [bits_enteros:-bits_decimal] k5_next, k3_next, k9_next, k10_next, aux2_next, k11_next;
-
-    reg signed [bits_enteros:-bits_decimal] k1_chico, k4_chico, k6_chico, k7_chico, k8_chico;
 
 
 
