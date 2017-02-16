@@ -87,14 +87,14 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
 
 //////////tiempo de espera para los calculos, ANALIZAR QUE VALORES PONER EN FUNCION DE LA COMPLEJIDAD DE LAS OPERACIONES
 
-    localparam paso1 = 8'd3;
-    localparam paso2 = 8'd12;
-    localparam paso3 = 8'd15;
-    localparam paso4 = 8'd24;
-    localparam paso5 = 8'd33;
-    localparam paso6 = 8'd36;
-    localparam paso7 = 8'd76;
-    localparam paso8 = 8'd85;
+    localparam paso1 = 8'd10;
+    localparam paso2 = 8'd20;
+    localparam paso3 = 8'd30;
+    localparam paso4 = 8'd40;
+    localparam paso5 = 8'd50;
+    localparam paso6 = 8'd60;
+    localparam paso7 = 8'd80;
+    localparam paso8 = 8'd90;
     localparam paso9 = 8'd100;
 
 
