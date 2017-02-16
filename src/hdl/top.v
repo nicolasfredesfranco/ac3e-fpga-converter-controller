@@ -96,16 +96,8 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
     wire [27:0] quotient;
     wire [27:0] fs_clk_medios;
 
-    div_gen_v3_0_0 magic_number (
-    .ce(CE),
-    .clk(clk), // input clk
-    .rfd(), // output rfd
-    .dividend(fs_clk), // input [27 : 0] dividend
-    .divisor(9'd510), // input [8 : 0] divisor
-    .quotient(quotient), // output [27 : 0] quotient
-    .fractional()); // output [8 : 0] fractional
 
-
+    assign  quotient = (fs_clk>>9);
     assign fs_clk_medios = {fs_clk >> 1} ;
 
     ////////////////////////////

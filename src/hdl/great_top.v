@@ -32,8 +32,8 @@ module great_top(clk, CE, rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, 
 
 
 
-    localparam bits_enteros = 32;
-    localparam bits_decimal = 32;
+    localparam bits_enteros = 20;
+    localparam bits_decimal = 17;
 
     wire [3:0] Sp; //Conmutaciones del primario (Sp1,Sp2,Sp3,Sp4)
     wire [3:0] Ss; //Conmutaciones del secundario  (Ss1,Ss2,Ss3,Ss4)

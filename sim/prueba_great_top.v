@@ -27,9 +27,9 @@ module prueba_great_top();
 	reg CE;
 	reg rst;
     reg sync;
-    reg [32:-32] Vdc1;
-    reg [32:-32] Vdc2;
-    reg [32:-32] Iref;
+    reg [20:-17] Vdc1;
+    reg [20:-17] Vdc2;
+    reg [20:-17] Iref;
 
     
 	
@@ -74,9 +74,9 @@ module prueba_great_top();
 		clk = 1'b0;
 		CE  = 1'b1;
 		rst = 1'b0;
-		Vdc1 = 65'd1460288880640; //340 V
-		Vdc2 = 65'd432932703436; // 100.8 V  432932703436
-		Iref = 65'd85899345920;  //equivale a 20 A
+		Vdc1 = 38'd44564480; //340 V
+		Vdc2 = 38'd13212057; // 100.8 V  432932703436
+		Iref = 38'd1310720;  //equivale a 20 A
 		sync = 1'b0;
 
 		#700
