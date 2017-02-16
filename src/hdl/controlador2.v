@@ -34,7 +34,7 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
 
 
     reg [3:0] state1, state2, state3, state1_next, state2_next, state3_next;
-    reg [7:0] contador1, contador2;
+    reg [7:0] contador1, contador1_next;
 
 
     initial
@@ -46,6 +46,7 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
         state2_next= INIT;
         state3_next= INIT;
     end
+
 
     localparam bits_enteros = 20;
     localparam bits_decimal = 17;
@@ -304,133 +305,113 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                     end
         estado1:    begin
-                        state1 = (contador1_next >= paso1_2a)? estado2 :estado1;
+                        state1 = (contador1_next >= paso1)? estado2 :estado1;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                     end
         estado2:    begin
-                        state1 = (contador1_next >= paso2_2a)? estado3 :estado2;
+                        state1 = (contador1_next >= paso2)? estado3 :estado2;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b1;
-                        divisor1_tdata = Vdc2p_next_chico[32:-31];
-                        dividend1_tvalid = 1'b1;
-                        dividend1_tdata = Vdc1[32:-31];                 
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;              
                     end  
         estado3:    begin
-                        state1 = (contador1_next >= paso3_2a)? estado4 :estado3;
+                        state1 = (contador1_next >= paso3)? estado4 :estado3;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end        
         estado4:    begin
-                        state1 = (contador1_next >= paso4_2a)? estado5 :estado4; 
+                        state1 = (contador1_next >= paso4)? estado5 :estado4; 
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b1;
-                        divisor1_tdata = fs_DAB_fixed[32:-31];  //crear fs_Dab_fixed
-                        dividend1_tvalid = 1'b1;
-                        dividend1_tdata = uno_d_inv_next[32:-31];
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end    
         estado5:    begin
-                        state1 = (contador1_next >= paso5_2a)? estado6 :estado5; 
+                        state1 = (contador1_next >= paso5)? estado6 :estado5; 
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b1;
-                        divisor1_tdata = Vdc1[32:-31];
-                        dividend1_tvalid = 1'b1;
-                        dividend1_tdata = Vdc2p_next_chico[32:-31];
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end    
         estado6:    begin
-                        state1 = (contador1_next >= paso6_2a)? ((aux1_positivo)? estado7 : estado10) : estado6 ;
+                        state1 = (contador1_next >= paso6)? ((aux1_positivo)? estado7 : estado_espera) : estado6 ;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end 
         estado7:    begin
-                        state1 = (contador1_next >= paso7_2a)? estado8 :estado7;
+                        state1 = (contador1_next >= paso7)? estado8 :estado7;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b1;
-                        divisor1_tdata = resta_next[32:-31];
-                        dividend1_tvalid = 1'b1;
-                        dividend1_tdata = fs_DAB_fixed[32:-31];
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end    
         estado8:    begin
-                        state1 = (contador1_next >= paso8_2a)? estado9 :estado8;
+                        state1 = (contador1_next >= paso8)? estado9 :estado8;
                         contador1 = contador1_next + 8'd1;
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                     end    
         
         estado9:    begin
-                        state1 = (contador1_next >= paso9_2a)? estado10 :estado9;
+                        state1 = (contador1_next >= paso9)? estado10 :estado9;
                         contador1 = contador1_next + 8'd1;
 
-                        tau1_modo2a = f5_next_chico*f8_next;
-                        tau2_modo2a = f9_next_chico*h4_next;
-                        phi_modo2a = dout_tdata_chico;
+                        tau1_modo2a = tau1_modo2a_next;
+                        tau2_modo2a = tau2_modo2a_next;
+                        phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b1;
-                        divisor1_tdata = Vdc1[32:-31];
-                        dividend1_tvalid = 1'b1;
-                        dividend1_tdata = f11_next_chico[32:-31];
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end    
         
@@ -442,10 +423,20 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
+                    end    
+        estado_espera:    begin
+                        state1 = (contador1_next >= paso9)? estado10 :estado_espera;
+                        contador1 = contador1_next + 8'd1;
+
+                        tau1_modo2a = tau1_modo2a_next;
+                        tau2_modo2a = tau2_modo2a_next;
+                        phi_modo2a = phi_modo2a_next;
+
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
+                        
                     end    
 
         default:    begin
@@ -456,10 +447,8 @@ float_to_fixed caja10 (
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
+                        divisor = divisor_next;
+                        dividendo = dividend1_tdata_next;
                         
                     end
         endcase
@@ -474,9 +463,7 @@ float_to_fixed caja10 (
 
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
-            phi_modo2a_next <= phi_modo2a_next;       
-            divisor1_tdata_next <= divisor1_tdata_next;
-            dividend1_tdata_next <= dividend1_tdata_next;
+            phi_modo2a_next <= phi_modo2a_next;
         end
         else if (CE)
         begin
@@ -485,9 +472,7 @@ float_to_fixed caja10 (
 
             tau1_modo2a_next <= tau1_modo2a;
             tau2_modo2a_next <= tau2_modo2a;
-            phi_modo2a_next <= phi_modo2a;       
-            divisor1_tdata_next <= divisor1_tdata;
-            dividend1_tdata_next <= dividend1_tdata;
+            phi_modo2a_next <= phi_modo2a;
         end
         else
         begin
@@ -496,9 +481,7 @@ float_to_fixed caja10 (
 
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
-            phi_modo2a_next <= phi_modo2a_next;       
-            divisor1_tdata_next <= divisor1_tdata_next;
-            dividend1_tdata_next <= dividend1_tdata_next;
+            phi_modo2a_next <= phi_modo2a_next;
         end
     end
 
@@ -510,196 +493,91 @@ float_to_fixed caja10 (
         phi_modo2a_final  = phi_modo2a_next;
     end
 
-    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p_next, h1_next, h2_next, f4_next, h7_next, f11_next, h8_next, f9_next, f5_next, tau1_modo2a_next, tau2_modo2a_next;  
-    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p, h1, h2, f4, h7, f11, h8, f9, f5, tau1_modo2a, tau2_modo2a;  
 
-    reg signed [bits_enteros:-bits_decimal] Vdc2p_next_chico, h1_next_chico,h2_next_chico,f4_next_chico,h7_next_chico,f11_next_chico,h8_next_chico, f9_next_chico, f5_next_chico, tau1_modo2a_final, tau2_modo2a_final, phi_modo2a_final;
-
-
-    reg signed [bits_enteros:-bits_decimal] d_next, d_inv_next, uno_d_inv_next, div_next, aux1_next, resta_next, h3_next, h4_next, f8_next, phi_modo2a_next;
-    reg signed [bits_enteros:-bits_decimal] d, d_inv, uno_d_inv, div, aux1, resta, h3, h4, f8, phi_modo2a;
 
 ///////////////////////////////////////////////////////////////////////machine state 2      asociada al modo 2b 
 
 
 
-
-
-always@(*)// maquina de estados para el voltaje V2
+    always@(*)// maquina de estados para el voltaje V2
         case(state2_next)
         INIT:    begin 
                         state2 = (sync)? estado1 : INIT;//ojo con la comparacion
-                        contador2 = 8'd0;
-
-
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
                     end
         estado1:    begin
-                        state2 = (contador2_next >= paso1_2b)? estado2 :estado1;
-                        contador2 = contador2_next + 8'd1;
+                        state2 = (contador1_next >= paso1)? estado2 :estado1;
 
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
                     end
         estado2:    begin
-                        state2 = (contador2_next >= paso2_2b)? estado3 :estado2;
-                        contador2 = contador2_next + 8'd1;
-
+                        state2 = (contador1_next >= paso2)? estado3 :estado2;
 
                         tau2_modo2b = tau2_modo2b_next;
-                        phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b1;
-                        divisor2_tdata = g4_next_chico[32:-31];
-                        dividend2_tvalid = 1'b1;
-                        dividend2_tdata = g0_next_chico[32:-31];             
+                        phi_modo2b = phi_modo2b_next;             
                     end  
         estado3:    begin
-                        state2 = (contador2_next >= paso3_2b)? estado4 :estado3;
-                        contador2 = contador2_next + 8'd1;
+                        state2 = (contador1_next >= paso3)? estado4 :estado3;
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b1;
-                        divisor2_tdata = g4_next_chico[32:-31];
-                        dividend2_tvalid = 1'b1;
-                        dividend2_tdata = g2_next_chico[32:-31];
                         
                     end        
         estado4:    begin
-                        state2 = (contador2_next >= paso4_2b)? estado5 :estado4;
-                        contador2 = contador2_next + 8'd1;
+                        state2 = (contador1_next >= paso4)? estado5 :estado4; 
 
-                        tau2_modo2b = g3_next + g1_next;
+                        tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
                         
                     end    
         estado5:    begin
-                        state2 = (contador2_next >= paso5_2b)? estado6 :estado5;
-                        contador2 = contador2_next + 8'd1;
+                        state2 = (contador1_next >= paso5)? estado6 :estado5; 
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
                         
                     end    
         estado6:    begin
-                        state2 = (contador2_next >= paso6_2b)? estado7 :estado6;
-                        contador2 = contador2_next + 8'd1;
-
+                        state2 = (contador1_next >= paso6)? estado7 : estado6 ;
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b1;
-                        divisor2_tdata = g6_next_chico[32:-31];
-                        dividend2_tvalid = 1'b1;
-                        dividend2_tdata = g8_next_chico[32:-31];
                         
                     end 
         estado7:    begin
-                        state2 = (contador2_next >= paso7_2b)? estado8 :estado7;
-                        contador2 = contador2_next + 8'd1;
+                        state2 = (contador1_next >= paso7)? estado_espera :estado7;
 
                         tau2_modo2b = tau2_modo2b_next;
-                        phi_modo2b = g9_next + g10_next;
+                        phi_modo2b = phi_modo2b_next;
+                        
+                    end      
+        estado10:   begin
+                        state2 = estado1;
 
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
+                        tau2_modo2b = tau2_modo2b_next;
+                        phi_modo2b = phi_modo2b_next;
+                    end    
+        estado_espera:    begin
+                        state2 = (contador1_next >= paso9)? estado10 :estado_espera;
+
+                        tau2_modo2b = tau2_modo2b_next;
+                        phi_modo2b = phi_modo2b_next;
                         
                     end    
-        estado8:    begin
-                        state2 = estado1;
-                        contador2 = 8'd0;
-
-
-                        tau2_modo2b = tau2_modo2b_next;
-                        phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;
-                    end     
-        estado9:   begin
-                        state1 = estado1;
-                        contador1 = 8'd0;
-
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
-
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
-                    end   
-        estado10:   begin
-                        state1 = estado1;
-                        contador1 = 8'd0;
-
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
-
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
-                    end   
-        estado_espera:   begin
-                        state1 = estado1;
-                        contador1 = 8'd0;
-
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
-
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
-                    end   
         default:    begin
                         state2 = estado1;
-                        contador2 = 8'd0;
-
 
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
-
-                        divisor2_tvalid = 1'b0;
-                        divisor2_tdata = divisor2_tdata_next;
-                        dividend2_tvalid = 1'b0;
-                        dividend2_tdata = dividend2_tdata_next;    
+                        
                     end
         endcase
     
+
 
 
     always @(posedge clk or posedge rst)
@@ -707,37 +585,21 @@ always@(*)// maquina de estados para el voltaje V2
         if (rst)                                              ///arreglar lo que se hace aqui 
         begin
             state2_next <= estado1;
-            contador2_next <= 8'd0;
-
             tau2_modo2b_next <= tau2_modo2b_next;
             phi_modo2b_next <= phi_modo2b_next;
-
-            divisor2_tdata_next <= divisor2_tdata_next;
-            dividend2_tdata_next <= dividend2_tdata_next;
         end
         else if (CE)
         begin
             state2_next <= state2;
-            contador2_next <= contador2;
-
-
             tau2_modo2b_next <= tau2_modo2b;
             phi_modo2b_next <= phi_modo2b;
-
-            divisor2_tdata_next <= divisor2_tdata;
-            dividend2_tdata_next <= dividend2_tdata;  
+  
         end
         else
         begin
             state2_next <= state2_next;
-            contador2_next <= contador2_next;
-
-
             tau2_modo2b_next <= tau2_modo2b_next;
-            phi_modo2b_next <= phi_modo2b_next;
-
-            divisor2_tdata_next <= divisor2_tdata_next;
-            dividend2_tdata_next <= dividend2_tdata_next;  
+            phi_modo2b_next <= phi_modo2b_next; 
         end
     end
 
@@ -757,220 +619,125 @@ always@(*)// maquina de estados para el voltaje V2
 
 ///////////////////////////////////////////////////////////////////////machine state 3      asociada al modo 1
 
-
-
-always@(*)// maquina de estados para el voltaje V2
+    always@(*)// maquina de estados para el voltaje V2
         case(state3_next)
         INIT:    begin 
                         state3 = (sync)? estado1 : INIT;//ojo con la comparacion
-                        contador3 = 8'd0;
-
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
                     end
         estado1:    begin
-                        state3 = (contador3_next >= paso1_1)? estado2 :estado1;
-                        contador3 = contador3_next + 8'd1;
-
+                        state3 = (contador1_next >= paso1)? estado2 :estado1;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
                     end
         estado2:    begin
-                        state3 = (contador3_next >= paso2_1)? estado3 :estado2;
-                        contador3 = contador3_next + 8'd1;
-
+                        state3 = (contador1_next >= paso2)? estado3 :estado2;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
-
-                        divisor3_tvalid = 1'b1;
-                        divisor3_tdata = k0_next_chico[32:-31];
-                        dividend3_tvalid = 1'b1;
-                        dividend3_tdata = k4_next_chico[32:-31];            
+             
                     end  
         estado3:    begin
-                        state3 = (contador3_next >= paso3_1)? estado4 :estado3;
-                        contador3 = contador3_next + 8'd1;
+                        state3 = (contador1_next >= paso3)? estado4 :estado3;
 
-
-                        tau2_modo1 = dout3_tdata_chico;
-                        phi_modo1 = phi_modo1_next;
-
-                        divisor3_tvalid = 1'b1;
-                        divisor3_tdata = k0_next_chico[32:-31];
-                        dividend3_tvalid = 1'b1;
-                        dividend3_tdata = k3_next[32:-31];
-                        
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next; 
                     end        
         estado4:    begin
-                        state3 = (contador3_next >= paso4_1)? estado5 :estado4;
-                        contador3 = contador3_next + 8'd1;
-
+                        state3 = (contador1_next >= paso4)? estado5 :estado4; 
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
-
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
-                        
                     end    
         estado5:    begin
-                        state3 = (contador3_next >= paso5_1)? estado6 :estado5;
-                        contador3 = contador3_next + 8'd1;
-
-
+                        state3 = (contador1_next >= paso5)? estado6 :estado5; 
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
-
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
                         
                     end    
         estado6:    begin
-                        state3 = (contador3_next >= paso6_1)? ((aux2_positivo)? estado7 : estado9) : estado6 ;
-                        contador3 = contador3_next + 8'd1;
-
+                        state3 = (contador1_next >= paso6)? ((aux1_positivo)? estado7 : estado_espera) : estado6 ;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
-                        
                     end 
         estado7:    begin
-                        state3 = (contador3_next >= paso7_1)? estado8 :estado7;
-                        contador3 = contador3_next + 8'd1;
-
+                        state3 = (contador1_next >= paso7)? estado8 :estado7;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
-                        
-                    end
+                    end    
         estado8:    begin
-                        state3 = (contador3_next >= paso8_1)? estado9 :estado8;
-                        contador3 = contador3_next + 8'd1;
-
-                        tau2_modo1 = tau2_modo1_next;
-                        phi_modo1 = k11_next - sqrt2_next;
-
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
-                        
-                    end                         
-        estado9:    begin
-                        state3 = estado1;
-                        contador3 = 8'd0;
+                        state3 = (contador1_next >= paso8)? estado9 :estado8;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;
-                    end     
+                    end    
+        
+        estado9:    begin
+                        state3 = (contador1_next >= paso9)? estado10 :estado9;
+
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+                        
+                    end    
+        
         estado10:   begin
-                        state1 = estado1;
-                        contador1 = 8'd0;
+                        state3 = estado1;
 
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
-                    end   
-        estado_espera:   begin
-                        state1 = estado1;
-                        contador1 = 8'd0;
+                    end    
+        estado_espera:    begin
+                        state3 = (contador1_next >= paso9)? estado10 :estado_espera;
 
-                        tau1_modo2a = tau1_modo2a_next;
-                        tau2_modo2a = tau2_modo2a_next;
-                        phi_modo2a = phi_modo2a_next;
+                        tau2_modo1 = tau2_modo1_next;
+                        phi_modo1 = phi_modo1_next;
+                        
+                    end    
 
-                        divisor1_tvalid = 1'b0;
-                        divisor1_tdata = divisor1_tdata_next;
-                        dividend1_tvalid = 1'b0;
-                        dividend1_tdata = dividend1_tdata_next;
-                    end 
         default:    begin
                         state3 = estado1;
-                        contador3 = 8'd0;
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
-
-                        divisor3_tvalid = 1'b0;
-                        divisor3_tdata = divisor3_tdata_next;
-                        dividend3_tvalid = 1'b0;
-                        dividend3_tdata = dividend3_tdata_next;   
+                        
                     end
         endcase
-    
+  
 
     always @(posedge clk or posedge rst)
     begin
         if (rst)                                              ///arreglar lo que se hace aqui 
         begin
             state3_next <= estado1;
-            contador3_next <= 8'd0;
-
             tau2_modo1_next <= tau2_modo1_next;
             phi_modo1_next <= phi_modo1_next;
 
-            divisor3_tdata_next <= divisor3_tdata_next;
-            dividend3_tdata_next <= dividend3_tdata_next;
         end
         else if (CE)
         begin
             state3_next <= state3;
-            contador3_next <= contador3;
-
             tau2_modo1_next <= tau2_modo1;
             phi_modo1_next <= phi_modo1;
-
-            divisor3_tdata_next <= divisor3_tdata;
-            dividend3_tdata_next <= dividend3_tdata;  
+ 
         end
         else
         begin
             state3_next <= state3_next;
-            contador3_next <= contador3_next;
-
             tau2_modo1_next <= tau2_modo1_next;
             phi_modo1_next <= phi_modo1_next;
 
-            divisor3_tdata_next <= divisor3_tdata_next;
-            dividend3_tdata_next <= dividend3_tdata_next;  
         end
     end
 
@@ -1004,9 +771,9 @@ reg signed [2*bits_enteros:-2*bits_decimal] tau1_modo2a_inter, tau2_modo2a_inter
 
 always @(*)
 begin
-    tau1_modo2a_inter = escalado*tau1_modo2a_next;
-    tau2_modo2a_inter = escalado*tau2_modo2a_next;
-    phi_modo2a_inter = escalado*phi_modo2a_next;
+    tau1_modo2a_inter = escalado*tau1_modo2a_final;
+    tau2_modo2a_inter = escalado*tau2_modo2a_final;
+    phi_modo2a_inter = escalado*phi_modo2a_final;
     tau2_modo2b_inter = escalado*tau2_modo2b_next;
     phi_modo2b_inter = escalado*phi_modo2b_next;
     tau2_modo1_inter = escalado*tau2_modo1_next;
@@ -1017,13 +784,13 @@ end
 
 always @(*)
 begin
-    tau1_modo2a_adaptado = {tau1_modo2a_inter[64],tau1_modo2a_inter[7:0]};
-    tau2_modo2a_adaptado = {tau2_modo2a_inter[64],tau2_modo2a_inter[7:0]};
-    phi_modo2a_adaptado = {phi_modo2a_inter[64],phi_modo2a_inter[7:0]};
-    tau2_modo2b_adaptado = {tau2_modo2b_inter[64],tau2_modo2b_inter[7:0]};
-    phi_modo2b_adaptado = {phi_modo2b_inter[64],phi_modo2b_inter[7:0]};
-    tau2_modo1_adaptado = {tau2_modo1_inter[64],tau2_modo1_inter[7:0]};
-    phi_modo1_adaptado = {phi_modo1_inter[64],phi_modo1_inter[7:0]};
+    tau1_modo2a_adaptado = {tau1_modo2a_inter[20],tau1_modo2a_inter[7:0]};
+    tau2_modo2a_adaptado = {tau2_modo2a_inter[20],tau2_modo2a_inter[7:0]};
+    phi_modo2a_adaptado = {phi_modo2a_inter[20],phi_modo2a_inter[7:0]};
+    tau2_modo2b_adaptado = {tau2_modo2b_inter[20],tau2_modo2b_inter[7:0]};
+    phi_modo2b_adaptado = {phi_modo2b_inter[20],phi_modo2b_inter[7:0]};
+    tau2_modo1_adaptado = {tau2_modo1_inter[20],tau2_modo1_inter[7:0]};
+    phi_modo1_adaptado = {phi_modo1_inter[20],phi_modo1_inter[7:0]};
 end
 
 
@@ -1045,14 +812,14 @@ begin
         phi <= phi_modo2a_adaptado;
         modo <= 2'd0;   
     end
-    else if ((phi_modo2b_next[32]) && (~flag1[32])) 
+    else if ((phi_modo2b_next[20]) && (~flag1[20])) 
     begin 
         tau1 <= 9'd255;   
         tau2 <= tau2_modo2b_adaptado;
         phi <= phi_modo2b_adaptado;
         modo <= 2'd1;
     end
-    else if (aux2_positivo && (~phi_modo1_next[32]) && (~flag2[32])) // es necesario agregar flag 2, ver referencia en verde
+    else if (aux2_positivo && (~phi_modo1_next[20]) && (~flag2[20])) // es necesario agregar flag 2, ver referencia en verde
     begin
         tau1 <= 9'd255;   
         tau2 <= tau2_modo1_adaptado;
