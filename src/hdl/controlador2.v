@@ -295,12 +295,45 @@ float_to_fixed caja10 (
 /////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////machine state 1   asociada al modo 2a
+
+
+    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p, n4, d_inv, n3, n6, n9, n5, n11, n8;
+    reg signed [2*bits_enteros:-2*bits_decimal] Vdc2p_next, n4_next, d_inv_next, n3_next, n6_next, n9_next, n5_next, n11_next, n8_next;
+
+    reg signed [bits_enteros:-bits_decimal] n0, resta, uno_d_inv, d, f4, aux1, n12, n7, n13, h4, n10;
+    reg signed [bits_enteros:-bits_decimal] n0_next, resta_next, uno_d_inv_next, d_next, f4_next, aux1_next, n12_next, n7_next, n13_next, h4_next, n10_next;
+
+    reg signed [bits_enteros:-bits_decimal] Vdc2p_chico, n4_chico, d_inv_chico, n3_chico, n6_chico, n9_chico, n5_chico, n11_chico, n8_chico, tau1_modo2a_final, tau2_modo2a_final, phi_modo2a_final;
+
 ////
     always@(*)// maquina de estados para el voltaje V2
         case(state1_next)
         INIT:    begin 
                         state1 = (sync)? estado1 : INIT;//ojo con la comparacion
                         contador1 = 8'd0;
+
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next;
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -311,6 +344,27 @@ float_to_fixed caja10 (
         estado1:    begin
                         state1 = (contador1_next >= paso1)? estado2 :estado1;
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -323,6 +377,27 @@ float_to_fixed caja10 (
                         state1 = (contador1_next >= paso2)? estado3 :estado2;
                         contador1 = contador1_next + 8'd1;
 
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -333,6 +408,27 @@ float_to_fixed caja10 (
         estado3:    begin
                         state1 = (contador1_next >= paso3)? estado4 :estado3;
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -346,6 +442,27 @@ float_to_fixed caja10 (
                         state1 = (contador1_next >= paso4)? estado5 :estado4; 
                         contador1 = contador1_next + 8'd1;
 
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -357,6 +474,27 @@ float_to_fixed caja10 (
         estado5:    begin
                         state1 = (contador1_next >= paso5)? estado6 :estado5; 
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -370,6 +508,27 @@ float_to_fixed caja10 (
                         state1 = (contador1_next >= paso6)? ((aux1_positivo)? estado7 : estado_espera) : estado6 ;
                         contador1 = contador1_next + 8'd1;
 
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -381,6 +540,27 @@ float_to_fixed caja10 (
         estado7:    begin
                         state1 = (contador1_next >= paso7)? estado8 :estado7;
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -394,6 +574,27 @@ float_to_fixed caja10 (
                         state1 = (contador1_next >= paso8)? estado9 :estado8;
                         contador1 = contador1_next + 8'd1;
 
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -405,6 +606,27 @@ float_to_fixed caja10 (
         estado9:    begin
                         state1 = (contador1_next >= paso9)? estado10 :estado9;
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -419,6 +641,27 @@ float_to_fixed caja10 (
                         state1 = estado1;
                         contador1 = 8'd0;
 
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
+
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
                         phi_modo2a = phi_modo2a_next;
@@ -429,6 +672,27 @@ float_to_fixed caja10 (
         estado_espera:    begin
                         state1 = (contador1_next >= paso9)? estado10 :estado_espera;
                         contador1 = contador1_next + 8'd1;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -442,6 +706,27 @@ float_to_fixed caja10 (
         default:    begin
                         state1 = estado1;
                         contador1 = 8'd0;
+
+                        Vdc2p     =   Vdc2p_next; 
+                        n0        =   n0_next;
+                        resta     =   resta_next; 
+                        n4        =   n4_next;
+                        d_inv     =   d_inv_next; 
+                        n3        =   n3_next;
+                        n6        =   n6_next;
+                        n9        =   n9_next;
+                        uno_d_inv =   uno_d_inv_next;
+                        n5        =   n5_next;
+                        d         =   d_next;
+                        f4        =   f4_next;
+                        n11       =   n11_next;
+                        aux1      =   aux1_next; 
+                        n12       =   n12_next; 
+                        n7        =   n7_next;   
+                        n8        =   n8_next; 
+                        n13       =   n13_next; 
+                        h4        =   h4_next; 
+                        n10       =   n10_next; 
 
                         tau1_modo2a = tau1_modo2a_next;
                         tau2_modo2a = tau2_modo2a_next;
@@ -461,6 +746,28 @@ float_to_fixed caja10 (
             state1_next <= estado1; 
             contador1_next <= 8'd0; 
 
+
+            Vdc2p_next  <=  Vdc2p_next;  
+            n0_next     <=  n0_next; 
+            resta_next  <=  resta_next;  
+            n4_next     <=  n4_next; 
+            d_inv_next  <=  d_inv_next;  
+            n3_next     <=  n3_next; 
+            n6_next     <=  n6_next; 
+            n9_next     <=  n9_next; 
+            uno_d_inv_next  <=  uno_d_inv_next; 
+            n5_next     <=  n5_next; 
+            d_next      <=  d_next; 
+            f4_next     <=  f4_next; 
+            n11_next    <=  n11_next; 
+            aux1_next   <=  aux1_next;  
+            n12_next    <=  n12_next;  
+            n7_next     <=  n7_next;    
+            n8_next     <=  n8_next;  
+            n13_next    <=  n13_next;  
+            h4_next     <=  h4_next;  
+            n10_next    <=  n10_next;  
+
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
             phi_modo2a_next <= phi_modo2a_next;
@@ -469,6 +776,27 @@ float_to_fixed caja10 (
         begin
             state1_next <= state1; 
             contador1_next <= contador1; 
+
+            Vdc2p_next  <=  Vdc2p;  
+            n0_next     <=  n0; 
+            resta_next  <=  resta;  
+            n4_next     <=  n4; 
+            d_inv_next  <=  d_inv;  
+            n3_next     <=  n3; 
+            n6_next     <=  n6; 
+            n9_next     <=  n9; 
+            uno_d_inv_next  <=  uno_d_inv; 
+            n5_next     <=  n5; 
+            d_next      <=  d; 
+            f4_next     <=  f4; 
+            n11_next    <=  n11; 
+            aux1_next   <=  aux1;  
+            n12_next    <=  n12;  
+            n7_next     <=  n7;    
+            n8_next     <=  n8;  
+            n13_next    <=  n13;  
+            h4_next     <=  h4;  
+            n10_next    <=  n10; 
 
             tau1_modo2a_next <= tau1_modo2a;
             tau2_modo2a_next <= tau2_modo2a;
@@ -479,6 +807,27 @@ float_to_fixed caja10 (
             state1_next <= state1_next; 
             contador1_next <= contador1_next; 
 
+            Vdc2p_next  <=  Vdc2p_next;  
+            n0_next     <=  n0_next; 
+            resta_next  <=  resta_next;  
+            n4_next     <=  n4_next; 
+            d_inv_next  <=  d_inv_next;  
+            n3_next     <=  n3_next; 
+            n6_next     <=  n6_next; 
+            n9_next     <=  n9_next; 
+            uno_d_inv_next  <=  uno_d_inv_next; 
+            n5_next     <=  n5_next; 
+            d_next      <=  d_next; 
+            f4_next     <=  f4_next; 
+            n11_next    <=  n11_next; 
+            aux1_next   <=  aux1_next;  
+            n12_next    <=  n12_next;  
+            n7_next     <=  n7_next;    
+            n8_next     <=  n8_next;  
+            n13_next    <=  n13_next;  
+            h4_next     <=  h4_next;  
+            n10_next    <=  n10_next;  
+
             tau1_modo2a_next <= tau1_modo2a_next;
             tau2_modo2a_next <= tau2_modo2a_next;
             phi_modo2a_next <= phi_modo2a_next;
@@ -488,9 +837,18 @@ float_to_fixed caja10 (
 
     always @(*)
     begin
-        Vdc2p_next_chico = Vdc2p_next[bits_enteros:-bits_decimal];
-
-        phi_modo2a_final  = phi_modo2a_next;
+        Vdc2p_chico = Vdc2p_next[bits_enteros:-bits_decimal];
+        n4_chico = n4_next[bits_enteros:-bits_decimal];
+        d_inv_chico = d_inv_next[bits_enteros:-bits_decimal];
+        n3_chico = n3_next[bits_enteros:-bits_decimal];
+        n6_chico = n6_next[bits_enteros:-bits_decimal];
+        n9_chico = n9_next[bits_enteros:-bits_decimal];
+        n5_chico = n5_next[bits_enteros:-bits_decimal];
+        n11_chico = n11_next[bits_enteros:-bits_decimal];
+        n8_chico = n8_next[bits_enteros:-bits_decimal];
+        tau1_modo2a_final = tau1_modo2a_next[bits_enteros:-bits_decimal];
+        tau2_modo2a_final = tau2_modo2a_next[bits_enteros:-bits_decimal];
+        phi_modo2a_final  = phi_modo2a_next[bits_enteros:-bits_decimal];
     end
 
 
@@ -499,16 +857,45 @@ float_to_fixed caja10 (
 
 
 
+    reg signed [2*bits_enteros:-2*bits_decimal] k2, n2, n1, g8, g6;
+    reg signed [2*bits_enteros:-2*bits_decimal] k2_next, n2_next, n1_next, g8_next, g6_next;
+
+    reg signed [bits_enteros:-bits_decimal] g5, g10, g9;
+    reg signed [bits_enteros:-bits_decimal] g5_next, g10_next, g9_next;
+
+    reg signed [bits_enteros:-bits_decimal] k2_chico, n2_chico, n1_chico, g8_chico, g6_chico;
+
+
+
+
     always@(*)// maquina de estados para el voltaje V2
         case(state2_next)
         INIT:    begin 
                         state2 = (sync)? estado1 : INIT;//ojo con la comparacion
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                     end
         estado1:    begin
                         state2 = (contador1_next >= paso1)? estado2 :estado1;
+
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
 
 
                         tau2_modo2b = tau2_modo2b_next;
@@ -517,12 +904,30 @@ float_to_fixed caja10 (
         estado2:    begin
                         state2 = (contador1_next >= paso2)? estado3 :estado2;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;             
                     end  
         estado3:    begin
                         state2 = (contador1_next >= paso3)? estado4 :estado3;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -530,6 +935,15 @@ float_to_fixed caja10 (
         estado4:    begin
                         state2 = (contador1_next >= paso4)? estado5 :estado4; 
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -537,6 +951,15 @@ float_to_fixed caja10 (
         estado5:    begin
                         state2 = (contador1_next >= paso5)? estado6 :estado5; 
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -544,6 +967,15 @@ float_to_fixed caja10 (
         estado6:    begin
                         state2 = (contador1_next >= paso6)? estado7 : estado6 ;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -551,6 +983,15 @@ float_to_fixed caja10 (
         estado7:    begin
                         state2 = (contador1_next >= paso7)? estado_espera :estado7;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -558,12 +999,30 @@ float_to_fixed caja10 (
         estado10:   begin
                         state2 = estado1;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                     end    
         estado_espera:    begin
                         state2 = (contador1_next >= paso9)? estado10 :estado_espera;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -571,6 +1030,15 @@ float_to_fixed caja10 (
         default:    begin
                         state2 = estado1;
 
+                        k2  = k2_next; 
+                        n2  = n2_next; 
+                        n1  = n1_next; 
+                        g8  = g8_next; 
+                        g6  = g6_next; 
+                        g5  = g5_next; 
+                        g10 = g10_next;
+                        g9  = g9_next; 
+                        
                         tau2_modo2b = tau2_modo2b_next;
                         phi_modo2b = phi_modo2b_next;
                         
@@ -585,12 +1053,34 @@ float_to_fixed caja10 (
         if (rst)                                              ///arreglar lo que se hace aqui 
         begin
             state2_next <= estado1;
+
+
+            k2_next  <= k2_next  ;
+            n2_next  <= n2_next  ;
+            n1_next  <= n1_next  ;
+            g8_next  <= g8_next  ;
+            g6_next  <= g6_next  ;
+            g5_next  <= g5_next  ;
+            g10_next <= g10_next ;
+            g9_next  <= g9_next  ;
+
+
             tau2_modo2b_next <= tau2_modo2b_next;
             phi_modo2b_next <= phi_modo2b_next;
         end
         else if (CE)
         begin
             state2_next <= state2;
+
+            k2_next  <= k2  ;
+            n2_next  <= n2  ;
+            n1_next  <= n1  ;
+            g8_next  <= g8  ;
+            g6_next  <= g6  ;
+            g5_next  <= g5  ;
+            g10_next <= g10 ;
+            g9_next  <= g9  ;
+
             tau2_modo2b_next <= tau2_modo2b;
             phi_modo2b_next <= phi_modo2b;
   
@@ -598,6 +1088,17 @@ float_to_fixed caja10 (
         else
         begin
             state2_next <= state2_next;
+
+
+            k2_next  <= k2_next  ;
+            n2_next  <= n2_next  ;
+            n1_next  <= n1_next  ;
+            g8_next  <= g8_next  ;
+            g6_next  <= g6_next  ;
+            g5_next  <= g5_next  ;
+            g10_next <= g10_next ;
+            g9_next  <= g9_next  ;
+
             tau2_modo2b_next <= tau2_modo2b_next;
             phi_modo2b_next <= phi_modo2b_next; 
         end
@@ -606,9 +1107,11 @@ float_to_fixed caja10 (
 
     always @(*)
     begin
-        g0_next_chico = g0_next[bits_enteros:-bits_decimal];
-        g4_next_chico = g4_next[bits_enteros:-bits_decimal];
-
+        k2_chico = k2_next[bits_enteros:-bits_decimal];
+        n2_chico = n2_next[bits_enteros:-bits_decimal]; 
+        n1_chico = n1_next[bits_enteros:-bits_decimal]; 
+        g8_chico = g8_next[bits_enteros:-bits_decimal]; 
+        g6_chico = g6_next[bits_enteros:-bits_decimal];
     end
 
 
@@ -619,10 +1122,33 @@ float_to_fixed caja10 (
 
 ///////////////////////////////////////////////////////////////////////machine state 3      asociada al modo 1
 
+
+    reg signed [2*bits_enteros:-2*bits_decimal] k1, k4, k6, k7, k8;
+    reg signed [2*bits_enteros:-2*bits_decimal] k1_next, k4_next, k6_next, k7_next, k8_next;
+
+    reg signed [bits_enteros:-bits_decimal] k5, k3, k9, k10, aux2, k11;
+    reg signed [bits_enteros:-bits_decimal] k5_next, k3_next, k9_next, k10_next, aux2_next, k11_next;
+
+    reg signed [bits_enteros:-bits_decimal] k1_chico, k4_chico, k6_chico, k7_chico, k8_chico;
+
+
+
     always@(*)// maquina de estados para el voltaje V2
         case(state3_next)
         INIT:    begin 
                         state3 = (sync)? estado1 : INIT;//ojo con la comparacion
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -631,12 +1157,37 @@ float_to_fixed caja10 (
         estado1:    begin
                         state3 = (contador1_next >= paso1)? estado2 :estado1;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
                     end
         estado2:    begin
                         state3 = (contador1_next >= paso2)? estado3 :estado2;
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -645,17 +1196,56 @@ float_to_fixed caja10 (
         estado3:    begin
                         state3 = (contador1_next >= paso3)? estado4 :estado3;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next; 
                     end        
         estado4:    begin
                         state3 = (contador1_next >= paso4)? estado5 :estado4; 
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
                     end    
         estado5:    begin
                         state3 = (contador1_next >= paso5)? estado6 :estado5; 
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -664,6 +1254,19 @@ float_to_fixed caja10 (
         estado6:    begin
                         state3 = (contador1_next >= paso6)? ((aux1_positivo)? estado7 : estado_espera) : estado6 ;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
@@ -671,12 +1274,38 @@ float_to_fixed caja10 (
         estado7:    begin
                         state3 = (contador1_next >= paso7)? estado8 :estado7;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
                     end    
         estado8:    begin
                         state3 = (contador1_next >= paso8)? estado9 :estado8;
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -686,6 +1315,18 @@ float_to_fixed caja10 (
         estado9:    begin
                         state3 = (contador1_next >= paso9)? estado10 :estado9;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
                         
@@ -694,12 +1335,36 @@ float_to_fixed caja10 (
         estado10:   begin
                         state3 = estado1;
 
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
+
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
 
                     end    
         estado_espera:    begin
                         state3 = (contador1_next >= paso9)? estado10 :estado_espera;
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -708,6 +1373,18 @@ float_to_fixed caja10 (
 
         default:    begin
                         state3 = estado1;
+
+                        k1   = k1_next;  
+                        k4   = k4_next;  
+                        k5   = k5_next;  
+                        k3   = k3_next;  
+                        k6   = k6_next;  
+                        k7   = k7_next;  
+                        k8   = k8_next;  
+                        k9   = k9_next;  
+                        k10  = k10_next;  
+                        aux2 = aux2_next;  
+                        k11  = k11_next;  
 
                         tau2_modo1 = tau2_modo1_next;
                         phi_modo1 = phi_modo1_next;
@@ -721,6 +1398,19 @@ float_to_fixed caja10 (
         if (rst)                                              ///arreglar lo que se hace aqui 
         begin
             state3_next <= estado1;
+
+            k1_next   <= k1_next  ;
+            k4_next   <= k4_next  ;
+            k5_next   <= k5_next  ;
+            k3_next   <= k3_next  ;
+            k6_next   <= k6_next  ;
+            k7_next   <= k7_next  ;
+            k8_next   <= k8_next  ;
+            k9_next   <= k9_next  ;
+            k10_next  <= k10_next ; 
+            aux2_next <= aux2_next;  
+            k11_next  <= k11_next ;
+
             tau2_modo1_next <= tau2_modo1_next;
             phi_modo1_next <= phi_modo1_next;
 
@@ -728,6 +1418,19 @@ float_to_fixed caja10 (
         else if (CE)
         begin
             state3_next <= state3;
+
+            k1_next   <= k1  ;
+            k4_next   <= k4  ;
+            k5_next   <= k5  ;
+            k3_next   <= k3  ;
+            k6_next   <= k6  ;
+            k7_next   <= k7  ;
+            k8_next   <= k8  ;
+            k9_next   <= k9  ;
+            k10_next  <= k10 ; 
+            aux2_next <= aux2;  
+            k11_next  <= k11 ;
+
             tau2_modo1_next <= tau2_modo1;
             phi_modo1_next <= phi_modo1;
  
@@ -735,6 +1438,19 @@ float_to_fixed caja10 (
         else
         begin
             state3_next <= state3_next;
+
+            k1_next   <= k1_next  ;
+            k4_next   <= k4_next  ;
+            k5_next   <= k5_next  ;
+            k3_next   <= k3_next  ;
+            k6_next   <= k6_next  ;
+            k7_next   <= k7_next  ;
+            k8_next   <= k8_next  ;
+            k9_next   <= k9_next  ;
+            k10_next  <= k10_next ; 
+            aux2_next <= aux2_next;  
+            k11_next  <= k11_next ;
+
             tau2_modo1_next <= tau2_modo1_next;
             phi_modo1_next <= phi_modo1_next;
 
@@ -744,8 +1460,11 @@ float_to_fixed caja10 (
 
     always @(*)
     begin
-        k0_next_chico = k0_next[bits_enteros:-bits_decimal];
-
+        k1_chico = k1_next[bits_enteros:-bits_decimal]; 
+        k4_chico = k4_next[bits_enteros:-bits_decimal]; 
+        k6_chico = k6_next[bits_enteros:-bits_decimal]; 
+        k7_chico = k7_next[bits_enteros:-bits_decimal]; 
+        k8_chico = k8_next[bits_enteros:-bits_decimal];
     end
 
  
