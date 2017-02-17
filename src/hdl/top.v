@@ -18,11 +18,12 @@
 // Additional Comments: 
 //
 ///////////////////////////////////////////////////////////////////////////////////
-module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
+module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger); //<3
     input clk; // implementar rst de emergencia
     input CE;
     input rst;
-    input [27:0] fs_clk;  
+    input [27:0] fs_clk; 
+    input [11:0] razon_clk; 
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000
@@ -80,15 +81,15 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
     assign div_quo_phi = div_data_phi[51:24];
     assign div_quo_pi  = div_data_pi [50:24];
 
-    reg signed [27:0] phi_cuentas_aux;
-    reg signed [27:0] phi_cuentas_aux_next;
+    reg signed [20:0] phi_cuentas_aux;
+    reg signed [20:0] phi_cuentas_aux_next;
     reg signed [18:0] tau1_cuentas_next;
-    reg signed [27:0] tau1_cuentas_aux;
-    reg signed [27:0] tau1_cuentas_aux_next;
+    reg signed [20:0] tau1_cuentas_aux;
+    reg signed [20:0] tau1_cuentas_aux_next;
     reg signed [18:0] pi_cuentas_next;
     reg signed [18:0] tau2_cuentas_next;
-    reg signed [27:0] tau2_cuentas_aux;
-    reg signed [27:0] tau2_cuentas_aux_next;
+    reg signed [20:0] tau2_cuentas_aux;
+    reg signed [20:0] tau2_cuentas_aux_next;
     reg signed [18:0] phi_cuentas_next;
 
     /////////////////////////////
@@ -103,16 +104,16 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
     ////////////////////////////
     always@(*) //concatenacion de jaime para poder dividir (complemento a2)
     begin // 196_078 consutar referencia en verde
-        tau1_cuentas_aux_next= (t1*quotient);// 
-        tau1_cuentas_next = (div_tau1_valid) ? div_quo_tau1 : tau1_cuentas;
+        tau1_cuentas_aux_next= (t1*razon_clk);// 
+        tau1_cuentas_next = (tau1_cuentas_aux>>9);
         //tau1_cuentas_next=tau1_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
-        pi_cuentas_next=(div_pi_valid) ? div_quo_pi : pi_cuentas;// el numero debe ser 5*10^7
-        tau2_cuentas_aux_next= (t2*quotient);// OJO quizas la division genera problema de timing
-        tau2_cuentas_next = (div_tau2_valid) ? div_quo_tau2 : tau2_cuentas;
+        pi_cuentas_next={7'b0,(razon_clk>>1)};// el numero debe ser 5*10^7
+        tau2_cuentas_aux_next= (t2*razon_clk);// OJO quizas la division genera problema de timing
+        tau2_cuentas_next = (tau2_cuentas_aux>>9);
         //tau2_cuentas_next=tau2_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
         //phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
-        phi_cuentas_aux_next=phi*quotient;// OJO quizas la division genera problema de timing;
-        phi_cuentas_next = (div_phi_valid) ? div_quo_phi : phi_cuentas;
+        phi_cuentas_aux_next=phi*razon_clk;// OJO quizas la division genera problema de timing;
+        phi_cuentas_next = (phi_cuentas_aux>>9);
         //phi_cuentas_next=phi_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
@@ -127,6 +128,7 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
         phi_cuentas_aux <= phi_cuentas_aux_next;
     end
 
+    /*
     div_gen_v4_0_0 DivTau1 (
       .aclken(CE),
       .aclk(clk),                                           // input aclk
@@ -165,7 +167,8 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
       .m_axis_dout_tvalid(div_phi_valid),                   // output m_axis_dout_tvalid
       .m_axis_dout_tdata(div_data_phi)                      // output [55 : 0] m_axis_dout_tdata
     );
-
+    
+    
     div_gen_v4_0_1_pi DivPi (
       .aclken(CE),
       .aclk(clk),                                           // input aclk
@@ -178,7 +181,8 @@ module voltajes(clk, CE, rst, fs_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger
       .m_axis_dout_tvalid(div_pi_valid),                    // output m_axis_dout_tvalid
       .m_axis_dout_tdata(div_data_pi)                       // output [55 : 0] m_axis_dout_tdata
     );
-
+    
+    */
 
     //se definen los valores de transicion entre estados (numero de cuentas)
 

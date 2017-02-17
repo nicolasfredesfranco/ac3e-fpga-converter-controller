@@ -20,17 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, /*fs_DAB,*/ tau1, tau2, phi, modo);
+module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
     input clk;
     input CE;
     input rst;
     input sync;
     input trigger;
     input signed [bits_enteros:-bits_decimal] Vdc1, Vdc2, Iref;
-    //input signed [18:0] fs_DAB;
+    input signed [18:0] fs_DAB;
     output reg signed [8:0] tau1, tau2, phi;
     output reg [1:0] modo;
-    localparam fs_DAB = 19'd100000; // en HZ
+    //localparam fs_DAB = 19'd100000; // en HZ
 
 
     reg [3:0] state1, state2, state3, state1_next, state2_next, state3_next;
