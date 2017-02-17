@@ -58,6 +58,6 @@ module great_top(clk, CE, rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, 
 
     main actuador(clk, CE, rst, fs_clk, tau1, tau2, phi, fs_DAB, deadtime, sync, Sp, Ss, trigger);
 
-    controlador2 calculador(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+    controlador2 calculador(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, /*fs_DAB,*/ tau1, tau2, phi, modo);
 
 endmodule

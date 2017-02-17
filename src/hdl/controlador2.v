@@ -20,21 +20,26 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, /*fs_DAB,*/ tau1, tau2, phi, modo);
     input clk;
     input CE;
     input rst;
     input sync;
     input trigger;
     input signed [bits_enteros:-bits_decimal] Vdc1, Vdc2, Iref;
-    input signed [18:0] fs_DAB;
+    //input signed [18:0] fs_DAB;
     output reg signed [8:0] tau1, tau2, phi;
     output reg [1:0] modo;
-
+    localparam fs_DAB = 19'd100000; // en HZ
 
 
     reg [3:0] state1, state2, state3, state1_next, state2_next, state3_next;
     reg [7:0] contador1, contador1_next;
+
+    reg [3:0] state1_last;
+
+    always @(posedge clk)
+      state1_last <= state1;
 
 
     initial
@@ -175,6 +180,57 @@ float_to_fixed caja3 (
 );
 
 
+// JAIME ESTUVO AQUI
+
+  reg [bits_enteros:-bits_decimal] a;
+  reg [bits_enteros:-bits_decimal] b;
+
+  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p;
+
+mul_fsm1_1 multip_fsm1 (
+  .clk(clk), // input clk
+  .a(a), // input [37 : 0] a
+  .b(b), // input [37 : 0] b
+  .p(p) // output [75 : 0] p
+);
+
+  reg [bits_enteros:-bits_decimal] a1;
+  reg [bits_enteros:-bits_decimal] b1;
+
+  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p1;
+
+mul_fsm1_1 multip_fsm1_2 (
+  .clk(clk), // input clk
+  .a(a1), // input [37 : 0] a
+  .b(b1), // input [37 : 0] b
+  .p(p1) // output [75 : 0] p
+);
+
+
+  reg [bits_enteros:-bits_decimal] a_fsm2;
+  reg [bits_enteros:-bits_decimal] b_fsm2;
+
+  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p_fsm2;
+
+mul_fsm1_1 multip_fsm2 (
+  .clk(clk), // input clk
+  .a(a_fsm2), // input [37 : 0] a
+  .b(b_fsm2), // input [37 : 0] b
+  .p(p_fsm2) // output [75 : 0] p
+);
+
+
+  reg [bits_enteros:-bits_decimal] a_fsm3;
+  reg [bits_enteros:-bits_decimal] b_fsm3;
+
+  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p_fsm3;
+
+mul_fsm1_1 multip_fsm3 (
+  .clk(clk), // input clk
+  .a(a_fsm3), // input [37 : 0] a
+  .b(b_fsm3), // input [37 : 0] b
+  .p(p_fsm3) // output [75 : 0] p
+);
 
 
 assign  calcular_sqrt2 = (state3_next==estado7)? 1'b1 : 1'b0;
@@ -323,6 +379,9 @@ float_to_fixed caja10 (
 
 ////
     always@(*)// maquina de estados para el voltaje V2
+    begin
+    a = 0;
+    b = 0;
         case(state1_next)
         INIT:    begin 
                         state1 = (sync)? estado1 : INIT;//ojo con la comparacion
@@ -430,7 +489,10 @@ float_to_fixed caja10 (
                         resta     =   resta_next; 
                         n4        =   n4_next;
                         d_inv     =   d_inv_next; 
-                        n3        =   resta*n1_chico;
+                        //n3        =   resta*n1_chico; // GOTCHA
+                        a         =   resta;
+                        b         =   n1_chico;
+                        n3        =   p[bits_enteros:-bits_decimal];
                         n6        =   cuatro_piL*fs_DAB_fixed;
                         n9        =   c1*fs_DAB_fixed;
                         uno_d_inv =   uno - d_inv_chico;
@@ -467,7 +529,10 @@ float_to_fixed caja10 (
                         n6        =   n6_next;
                         n9        =   n9_next;
                         uno_d_inv =   uno_d_inv_next;
-                        n5        =   n3_chico*n4_chico;
+                        //n5        =   n3_chico*n4_chico; // GOTCHA
+                        a         =   n3_chico;
+                        b         =   n4_chico;
+                        n5        =   p[bits_enteros:-bits_decimal];
                         d         =   d_next;
                         f4        =   f4_next;
                         n11       =   n11_next;
@@ -606,7 +671,10 @@ float_to_fixed caja10 (
                         aux1      =   aux1_next; 
                         n12       =   n12_next; 
                         n7        =   n7_next;   
-                        n8        =   d_next*n7_next; 
+                        //n8        =   d_next*n7_next; // GOTCHA
+                        a         =   d_next;
+                        b         =   n7_next;
+                        n8        =   p[bits_enteros:-bits_decimal];
                         n13       =   sqrt1_next + n12_next; 
                         h4        =   razon_vueltas_inv + sqrt1_next; 
                         n10       =   division; 
@@ -643,9 +711,16 @@ float_to_fixed caja10 (
                         n13       =   n13_next; 
                         h4        =   h4_next; 
                         n10       =   n10_next; 
+                        // EL JAIME ESTUVO AQUI
+                        //tau1_modo2a = n7_next* n13_next; // GOTCHA
+                        a         =   n7_next;
+                        b         =   n13_next;
+                        tau1_modo2a =   p[bits_enteros:-bits_decimal];
 
-                        tau1_modo2a = n7_next* n13_next;
-                        tau2_modo2a = n7_next*h4_next;
+                        //tau2_modo2a = n7_next*h4_next; // GOTCHA
+                        a1 = n7_next;
+                        b1 = h4_next;
+                        tau2_modo2a = p1[bits_enteros:-bits_decimal];
                         phi_modo2a = 38'd0 - n10_next;
 
                         divisor = divisor_next;
@@ -753,6 +828,7 @@ float_to_fixed caja10 (
                         
                     end
         endcase
+  end
     
 
     always @(posedge clk or posedge rst)
@@ -894,6 +970,9 @@ float_to_fixed caja10 (
 
 
     always@(*)// maquina de estados para el voltaje V2
+    begin
+    a_fsm2 = 0;
+    b_fsm2 = 0;
         case(state2_next)
         INIT:    begin 
                         state2 = (sync)? estado1 : INIT;//ojo con la comparacion
@@ -932,7 +1011,10 @@ float_to_fixed caja10 (
                         k2  = k2_next; 
                         n2  = n2_next; 
                         n1  = n1_next; 
-                        g8  = Iref*k4_chico; 
+                        //g8  = Iref*k4_chico; // GOTCHA
+                        a_fsm2 = Iref;
+                        b_fsm2 = k4_chico;
+                        g8 = p_fsm2[bits_enteros:-bits_decimal];
                         g6  = g6_next; 
                         g5  = g5_next; 
                         g10 = g10_next;
@@ -964,7 +1046,10 @@ float_to_fixed caja10 (
                         n2  = n2_next; 
                         n1  = n1_next; 
                         g8  = g8_next; 
-                        g6  = tau2_modo2b_next*Vdc2p_chico; 
+                        //g6  = tau2_modo2b_next*Vdc2p_chico; // GOTCHA
+                        a_fsm2 = tau2_modo2b_next;
+                        b_fsm2 = Vdc2p_chico;
+                        g6 = p_fsm2[bits_enteros:-bits_decimal];
                         g5  = (tau2_modo2b_next>>1); 
                         g10 = g10_next;
                         g9  = g9_next; 
@@ -1069,7 +1154,7 @@ float_to_fixed caja10 (
                         
                     end
         endcase
-    
+    end
 
 
 
@@ -1150,7 +1235,10 @@ float_to_fixed caja10 (
 
 
     always@(*)// maquina de estados para el voltaje V2
-        case(state3_next)
+    begin
+    a_fsm3 = 0;
+    b_fsm3 = 0;
+    case(state3_next)
         INIT:    begin 
                         state3 = (sync)? estado1 : INIT;//ojo con la comparacion
 
@@ -1216,7 +1304,10 @@ float_to_fixed caja10 (
                         k4   = k4_next;  
                         k5   = k5_next;  
                         k3   = k3_next;  
-                        k6   = k5_next*Iref;  
+                        //k6   = k5_next*Iref;  // GOTCHA
+                        a_fsm3 = k5_next;
+                        b_fsm3 = Iref;
+                        k6   = p_fsm3[bits_enteros:-bits_decimal];
                         k7   = k7_next;  
                         k8   = k8_next;  
                         k9   = k9_next;  
@@ -1237,7 +1328,10 @@ float_to_fixed caja10 (
                         k3   = k3_next;  
                         k6   = k6_next;  
                         k7   = pi_medio*tau2_modo1_next;  
-                        k8   = tau2_modo1_next*tau2_modo1_next;  
+                        //k8   = tau2_modo1_next*tau2_modo1_next;  // GOTCHA
+                        a_fsm3 = tau2_modo1_next;
+                        b_fsm3 = tau2_modo1_next;
+                        k8 = p_fsm3[bits_enteros:-bits_decimal];
                         k9   = k9_next;  
                         k10  = k10_next;  
                         aux2 = aux2_next;  
@@ -1407,6 +1501,7 @@ float_to_fixed caja10 (
                         
                     end
         endcase
+  end
   
 
     always @(posedge clk or posedge rst)
