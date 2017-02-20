@@ -53,10 +53,20 @@ module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, 
             state1=INIT;
             state2=INIT;
             state3=INIT;//Nueva maquina diseñada para sincronizar las otras 2
+            state1_next=INIT;
+            state2_next=INIT;
+            state3_next=INIT;
             pi_cuentas = 19'd500;
             tau1_cuentas = 19'd499;
             phi_cuentas = -19'd17;
             tau2_cuentas = 19'd288;
+            pi_cuentas_next = 19'd500;
+            tau1_cuentas_next = 19'd499;
+            phi_cuentas_next = -19'd17;
+            tau2_cuentas_next = 19'd288;
+            tau1_cuentas_aux = 21'd499000;
+            phi_cuentas_aux = -21'd17000;
+            tau2_cuentas_aux = 21'd288000;
         end
 
 

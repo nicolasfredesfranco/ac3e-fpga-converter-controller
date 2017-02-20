@@ -31,32 +31,46 @@ module testbench_converterController;
 	reg [8:0] phi;
 	reg [18:0] fs_DAB;
 	reg sync;
+	reg CE;
+    reg rst;
+    reg [27:0] fs_clk; 
+    reg [11:0] razon_clk; 
+
+
 
 	// Outputs
 	wire [1:0] V1;
 	wire [1:0] V2;
-
+	wire trigger;
 
 	always 
 	begin
 	#5 clk= ~clk;
 	end
 	// Instantiate the Unit Under Test (UUT)
-	top uut (
+	voltajes uut (
 		.clk(clk), 
 		.t1(t1), 
 		.t2(t2), 
 		.phi(phi), 
 		.fs_DAB(fs_DAB), 
-		.sync(sync), 
+		.sync(sync),
+		.CE(CE),
+		.rst(rst),
+		.fs_clk(fs_clk),
+		.razon_clk(razon_clk), 
 		.V1(V1), 
-		.V2(V2)
+		.V2(V2),
+		.trigger(trigger)
 	);
 
 	initial begin
 		// Initialize Inputs
 		clk = 0;
-
+		CE=1'b1;
+		rst=1'b0;
+		fs_clk = 28'd100_000_000;
+		razon_clk = 12'd1000;
 		/*
 		NOTA:
 		t1 y t2 se mueve entre 0 y 255  (0 a pi)
