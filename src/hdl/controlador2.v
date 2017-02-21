@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+  module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
     input clk;
     input CE;
     input rst;
@@ -92,15 +92,15 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
 
 //////////tiempo de espera para los calculos, ANALIZAR QUE VALORES PONER EN FUNCION DE LA COMPLEJIDAD DE LAS OPERACIONES
 
-    localparam paso1 = 8'd10;
-    localparam paso2 = 8'd20;
-    localparam paso3 = 8'd30;
-    localparam paso4 = 8'd40;
-    localparam paso5 = 8'd50;
-    localparam paso6 = 8'd60;
-    localparam paso7 = 8'd80;
-    localparam paso8 = 8'd90;
-    localparam paso9 = 8'd100;
+    localparam paso1 = 8'd20; // se puede achicar maximo a 10 
+    localparam paso2 = 8'd40;
+    localparam paso3 = 8'd60;
+    localparam paso4 = 8'd80;
+    localparam paso5 = 8'd100;
+    localparam paso6 = 8'd130;
+    localparam paso7 = 8'd150;
+    localparam paso8 = 8'd170;  
+    localparam paso9 = 8'd180;
 
 
 
@@ -150,7 +150,7 @@ reg signed [bits_enteros:-bits_decimal] sqrt2_next;
 
 
 fixed_to_float caja1 (
-  .a(aux2_next), // input [37 : 0] a
+  .a(aux2), // input [37 : 0] a
   .operation_nd(calcular_sqrt2), // input operation_nd
   .clk(clk), // input clk
   .ce(CE), // input ce
@@ -185,7 +185,7 @@ float_to_fixed caja3 (
   reg [bits_enteros:-bits_decimal] a;
   reg [bits_enteros:-bits_decimal] b;
 
-  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p;
+  wire [(75-(2*bits_decimal)):-(2*bits_decimal)] p;
 
 mul_fsm1_1 multip_fsm1 (
   .clk(clk), // input clk
@@ -197,7 +197,7 @@ mul_fsm1_1 multip_fsm1 (
   reg [bits_enteros:-bits_decimal] a1;
   reg [bits_enteros:-bits_decimal] b1;
 
-  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p1;
+  wire [(75-(2*bits_decimal)):-(2*bits_decimal)] p1;
 
 mul_fsm1_1 multip_fsm1_2 (
   .clk(clk), // input clk
@@ -210,7 +210,7 @@ mul_fsm1_1 multip_fsm1_2 (
   reg [bits_enteros:-bits_decimal] a_fsm2;
   reg [bits_enteros:-bits_decimal] b_fsm2;
 
-  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p_fsm2;
+  wire [(75-(2*bits_decimal)):-(2*bits_decimal)] p_fsm2;
 
 mul_fsm1_1 multip_fsm2 (
   .clk(clk), // input clk
@@ -223,7 +223,7 @@ mul_fsm1_1 multip_fsm2 (
   reg [bits_enteros:-bits_decimal] a_fsm3;
   reg [bits_enteros:-bits_decimal] b_fsm3;
 
-  wire [(75-(2*bits_decimal))-1:-(2*bits_decimal)] p_fsm3;
+  wire [(75-(2*bits_decimal)):-(2*bits_decimal)] p_fsm3;
 
 mul_fsm1_1 multip_fsm3 (
   .clk(clk), // input clk
@@ -263,7 +263,7 @@ assign aux2_positivo = ~(aux2_next[20]);
 
 
 fixed_to_float caja4 (
-  .a(aux1_next), // input [37 : 0] a
+  .a(aux1), // input [37 : 0] a
   .operation_nd(calcular_sqrt1), // input operation_nd
   .clk(clk), // input clk
   .ce(CE), // input ce
@@ -329,7 +329,7 @@ assign aux1_positivo = ~(aux1_next[20]);
 
 
 fixed_to_float caja7 (
-  .a(divisor_next), // input [37 : 0] a
+  .a(divisor), // input [37 : 0] a
   .operation_nd(1'b1), // input operation_nd
   .clk(clk), // input clk
   .ce(CE), // input ce
@@ -338,7 +338,7 @@ fixed_to_float caja7 (
 );
 
 fixed_to_float caja8 (
-  .a(dividendo_next), // input [37 : 0] a
+  .a(dividendo), // input [37 : 0] a
   .operation_nd(1'b1), // input operation_nd
   .clk(clk), // input clk
   .ce(CE), // input ce
@@ -454,7 +454,7 @@ float_to_fixed caja10 (
 
                         Vdc2p     =   Vdc2p_next; 
                         n0        =   n0_next;
-                        resta     =   Vdc2p_next - Vdc1; 
+                        resta     =   Vdc2p_chico - Vdc1; 
                         n4        =   n2_chico*n0_next;
                         d_inv     =   n0_next*razon_vueltas_inv; 
                         n3        =   n3_next;
@@ -492,7 +492,7 @@ float_to_fixed caja10 (
                         //n3        =   resta*n1_chico; // GOTCHA
                         a         =   resta;
                         b         =   n1_chico;
-                        n3        =   p[bits_enteros:-bits_decimal];
+                        n3        =   p[bits_enteros - bits_decimal:-2*bits_decimal];
                         n6        =   cuatro_piL*fs_DAB_fixed;
                         n9        =   c1*fs_DAB_fixed;
                         uno_d_inv =   uno - d_inv_chico;
@@ -532,8 +532,8 @@ float_to_fixed caja10 (
                         //n5        =   n3_chico*n4_chico; // GOTCHA
                         a         =   n3_chico;
                         b         =   n4_chico;
-                        n5        =   p[bits_enteros:-bits_decimal];
-                        d         =   d_next;
+                        n5        =   p[bits_enteros - bits_decimal:-2*bits_decimal];
+                        d         =   division;
                         f4        =   f4_next;
                         n11       =   n11_next;
                         aux1      =   aux1_next; 
@@ -674,7 +674,7 @@ float_to_fixed caja10 (
                         //n8        =   d_next*n7_next; // GOTCHA
                         a         =   d_next;
                         b         =   n7_next;
-                        n8        =   p[bits_enteros:-bits_decimal];
+                        n8        =   p[bits_enteros - bits_decimal:-2*bits_decimal];
                         n13       =   sqrt1_next + n12_next; 
                         h4        =   razon_vueltas_inv + sqrt1_next; 
                         n10       =   division; 
@@ -712,15 +712,14 @@ float_to_fixed caja10 (
                         h4        =   h4_next; 
                         n10       =   n10_next; 
                         // EL JAIME ESTUVO AQUI
-                        //tau1_modo2a = n7_next* n13_next; // GOTCHA
-                        a         =   n7_next;
+                        //tau1_modo2a = n8_chico*n13_next; // GOTCHA
+                        a         =   n8_chico; //   !!!!!!!!!!!!!!!!!!!!!! importante, esta malo en la pizarra
                         b         =   n13_next;
-                        tau1_modo2a =   p[bits_enteros:-bits_decimal];
-
+                        tau1_modo2a =   p[bits_enteros - bits_decimal:-2*bits_decimal]; 
                         //tau2_modo2a = n7_next*h4_next; // GOTCHA
                         a1 = n7_next;
                         b1 = h4_next;
-                        tau2_modo2a = p1[bits_enteros:-bits_decimal];
+                        tau2_modo2a = p1[bits_enteros - bits_decimal:-2*bits_decimal];
                         phi_modo2a = 38'd0 - n10_next;
 
                         divisor = divisor_next;
@@ -1014,7 +1013,7 @@ float_to_fixed caja10 (
                         //g8  = Iref*k4_chico; // GOTCHA
                         a_fsm2 = Iref;
                         b_fsm2 = k4_chico;
-                        g8 = p_fsm2[bits_enteros:-bits_decimal];
+                        g8 = p_fsm2[bits_enteros - bits_decimal:-2*bits_decimal];
                         g6  = g6_next; 
                         g5  = g5_next; 
                         g10 = g10_next;
@@ -1049,7 +1048,7 @@ float_to_fixed caja10 (
                         //g6  = tau2_modo2b_next*Vdc2p_chico; // GOTCHA
                         a_fsm2 = tau2_modo2b_next;
                         b_fsm2 = Vdc2p_chico;
-                        g6 = p_fsm2[bits_enteros:-bits_decimal];
+                        g6 = p_fsm2[bits_enteros - bits_decimal:-2*bits_decimal];
                         g5  = (tau2_modo2b_next>>1); 
                         g10 = g10_next;
                         g9  = g9_next; 
@@ -1307,7 +1306,7 @@ float_to_fixed caja10 (
                         //k6   = k5_next*Iref;  // GOTCHA
                         a_fsm3 = k5_next;
                         b_fsm3 = Iref;
-                        k6   = p_fsm3[bits_enteros:-bits_decimal];
+                        k6   = p_fsm3[bits_enteros - bits_decimal:-2*bits_decimal];
                         k7   = k7_next;  
                         k8   = k8_next;  
                         k9   = k9_next;  
@@ -1331,7 +1330,7 @@ float_to_fixed caja10 (
                         //k8   = tau2_modo1_next*tau2_modo1_next;  // GOTCHA
                         a_fsm3 = tau2_modo1_next;
                         b_fsm3 = tau2_modo1_next;
-                        k8 = p_fsm3[bits_enteros:-bits_decimal];
+                        k8 = p_fsm3[bits_enteros - bits_decimal:-2*bits_decimal];
                         k9   = k9_next;  
                         k10  = k10_next;  
                         aux2 = aux2_next;  
@@ -1635,7 +1634,7 @@ begin
   end
   else if (CE)
   begin
-    if (aux1_positivo && (tau1_modo2a_final < pi)) //preguntar a miguel porque restringe a que sea menor a pi 
+    if (aux1_positivo && (tau1_modo2a_adaptado < 9'd255)) //preguntar a miguel porque restringe a que sea menor a pi 
     begin
         tau1 <= tau1_modo2a_adaptado;   
         tau2 <= tau2_modo2a_adaptado;
