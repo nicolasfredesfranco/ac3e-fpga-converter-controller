@@ -53,13 +53,13 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
     reg signed [8:0] t1_sinc, t2_sinc; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     reg signed [8:0] phi_sinc; //se entrega entre -255 y 255
     reg signed [18:0] fs_DAB_sinc;// esta en Hz y va de 0 a 150000
-    reg [27:0] fs_clk_sinc;
-    reg [11:0] razon_clk_sinc;
-    reg sync_sinc; //signal de disparo 
-    reg [7:0] deadtime_sinc;
+    //reg [27:0] fs_clk_sinc;
+    //reg [11:0] razon_clk_sinc;
+    //reg sync_sinc; //signal de disparo 
+    //reg [7:0] deadtime_sinc;
 
     wire signed [1:0] V1, V2;
-
+/*
     always @(posedge clk) 
     begin
         fs_clk_sinc <= fs_clk;
@@ -69,7 +69,7 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
         deadtime_sinc <= deadtime;    
     end
 
-
+*/
     ///// LIMITE DE SATURACION PARA PHI 
     reg signed [8:0] limite;
 
@@ -98,7 +98,7 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
     end
  
  
-    voltajes signals(clk, CE, rst, fs_clk_sinc, razon_clk_sinc, t1_sinc, t2_sinc, phi_sinc, fs_DAB_sinc, sync_sinc, V1, V2, trigger);
+    voltajes signals(clk, CE, rst, fs_clk, razon_clk, t1_sinc, t2_sinc, phi_sinc, fs_DAB, sync, V1, V2, trigger);
 
     switch patrones(clk, CE, rst, deadtime_sinc-8'd1, V1, V2, Sp, Ss);
 

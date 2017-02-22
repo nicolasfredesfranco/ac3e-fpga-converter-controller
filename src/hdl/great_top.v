@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: AC3E
-// Engineer: Nicolas I. Fredes Franco 
+// Company: 
+// Engineer: 
 // 
 // Create Date: 10.02.2017 10:23:51
 // Design Name: 
@@ -17,12 +17,12 @@
 // Revision 0.01 - File Created
 // Additional Comments:
 
-//  ES NECESARIO PONER EL RADIO DE LAS DSP'S EN 22
+    //OCUPAR RATIO DSP EN 80 !
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module great_top(clk, /*CE,*/ rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4, trigger/*, modo*/);
+module great_top(clk, /*CE,*/ rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4, trigger, modo);
     input clk;
     //input CE;
     input rst;
@@ -32,7 +32,7 @@ module great_top(clk, /*CE,*/ rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, S
     //input signed [bits_enteros:-bits_decimal] Vdc1, Vdc2, Iref;
     output trigger;
     output Sp1, Sp2, Sp3, Sp4, Ss1, Ss2, Ss3, Ss4;
-    //output [1:0] modo; //se puede dejar como wire al aire 
+    output [1:0] modo; //se puede dejar como wire al aire 
 
     ///////////////////////////// depende de como miguel me entregue los datos
 
@@ -44,7 +44,7 @@ module great_top(clk, /*CE,*/ rst, sync, Vdc1, Vdc2, Iref, Sp1, Sp2, Sp3, Sp4, S
 
     //////////////////////////////////////////
 
-    wire [1:0] modo;
+    //wire [1:0] modo;
     wire CE;
     assign CE = 1'b1;
 
