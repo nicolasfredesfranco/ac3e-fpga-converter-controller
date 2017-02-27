@@ -26,8 +26,8 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
     input clk; // implementar rst de emergencia
     input CE;
     input rst;
-    input [27:0] fs_clk;  
-    input [11:0] razon_clk;
+    input signed [27:0] fs_clk;  
+    input signed [11:0] razon_clk;
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000 
@@ -41,18 +41,18 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
     output trigger;
     
 
-
+/*
     initial
     begin
         t1_sinc=9'd255;
         t2_sinc=9'd147;
         phi_sinc=-9'd9;
     end
-
+*/
   
-    reg signed [8:0] t1_sinc, t2_sinc; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
+    /*reg signed [8:0] t1_sinc, t2_sinc; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     reg signed [8:0] phi_sinc; //se entrega entre -255 y 255
-    reg signed [18:0] fs_DAB_sinc;// esta en Hz y va de 0 a 150000
+    reg signed [18:0] fs_DAB_sinc;*/ // esta en Hz y va de 0 a 150000
     //reg [27:0] fs_clk_sinc;
     //reg [11:0] razon_clk_sinc;
     //reg sync_sinc; //signal de disparo 
@@ -71,7 +71,7 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
 
 */
     ///// LIMITE DE SATURACION PARA PHI 
-    reg signed [8:0] limite;
+    /*reg signed [8:0] limite;
 
     always @(*)
     begin
@@ -96,11 +96,11 @@ module main(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, deadtime, sync
             phi_sinc <= limite;             
         end
     end
+ */
  
- 
-    voltajes signals(clk, CE, rst, fs_clk, razon_clk, t1_sinc, t2_sinc, phi_sinc, fs_DAB, sync, V1, V2, trigger);
+    voltajes signals(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, V2, trigger);
 
-    switch patrones(clk, CE, rst, deadtime_sinc-8'd1, V1, V2, Sp, Ss);
+    switch patrones(clk, CE, rst, deadtime-8'd1, V1, V2, Sp, Ss);
 
 
 

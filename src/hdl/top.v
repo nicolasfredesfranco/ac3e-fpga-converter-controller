@@ -22,8 +22,8 @@ module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, 
     input clk; // implementar rst de emergencia
     input CE;
     input rst;
-    input [27:0] fs_clk; 
-    input [11:0] razon_clk; 
+    input signed [27:0] fs_clk; 
+    input signed [11:0] razon_clk; 
     input signed [8:0] t1, t2; //se entregan valores entre 0 y 255 (el signo es para operar con phi)
     input signed [8:0] phi; //se entrega entre -255 y 255
     input signed [18:0] fs_DAB;// esta en Hz y va de 0 a 150000
@@ -91,7 +91,7 @@ module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, 
     assign div_quo_phi = div_data_phi[51:24];
     assign div_quo_pi  = div_data_pi [50:24];
 
-    reg signed [20:0] phi_cuentas_aux;
+    reg signed [18:0] phi_cuentas_aux;
     reg signed [20:0] phi_cuentas_aux_next;
     reg signed [18:0] tau1_cuentas_next;
     reg signed [20:0] tau1_cuentas_aux;
@@ -122,8 +122,8 @@ module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, 
         tau2_cuentas_next = (tau2_cuentas_aux>>9);
         //tau2_cuentas_next=tau2_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing
         //phi_cuentas=({{10{phi[8]}},phi}*196078)/fs_DAB;// OJO quizas la division genera problema de timing;
-        phi_cuentas_aux_next=phi*razon_clk;// OJO quizas la division genera problema de timing;
-        phi_cuentas_next = (phi_cuentas_aux>>9);
+        phi_cuentas_aux_next=phi*razon_clk;// 
+        phi_cuentas_next = {{9{phi_cuentas_aux[18]}},phi_cuentas_aux[18:9]};
         //phi_cuentas_next=phi_cuentas_aux/fs_DAB;// OJO quizas la division genera problema de timing;
     end
 
@@ -135,7 +135,7 @@ module voltajes(clk, CE, rst, fs_clk, razon_clk, t1, t2, phi, fs_DAB, sync, V1, 
         tau2_cuentas <= tau2_cuentas_next;
         tau2_cuentas_aux <= tau2_cuentas_aux_next;
         phi_cuentas <= phi_cuentas_next;
-        phi_cuentas_aux <= phi_cuentas_aux_next;
+        phi_cuentas_aux <= phi_cuentas_aux_next[18:0];
     end
 
     /*

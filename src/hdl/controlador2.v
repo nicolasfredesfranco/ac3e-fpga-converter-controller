@@ -20,7 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1, tau2, phi, modo);
+module controlador2(uno, razon_vueltas,razon_vueltas_inv, f1, cuatro_piL, c1, pi, c2, dos_pi2L, pi_medio, Ipc, Isc, dos, clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, escalado, tau1, tau2, phi, modo);
+    input signed [bits_enteros:-bits_decimal] uno, razon_vueltas,razon_vueltas_inv, f1, cuatro_piL, c1, pi, c2, dos_pi2L, pi_medio, Ipc, Isc, dos;
     input clk;
     input CE;
     input rst;
@@ -28,6 +29,7 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
     input trigger;
     input signed [bits_enteros:-bits_decimal] Vdc1, Vdc2, Iref;
     input signed [18:0] fs_DAB;
+    input signed [bits_enteros:-bits_decimal] escalado;
     output reg signed [8:0] tau1, tau2, phi;
     output reg [1:0] modo;
     //localparam fs_DAB = 19'd100000; // en HZ
@@ -55,20 +57,7 @@ module controlador2(clk, CE, rst, sync, trigger, Vdc1, Vdc2, Iref, fs_DAB, tau1,
 
     localparam bits_enteros = 20;
     localparam bits_decimal = 17;
-    localparam razon_vueltas = 38'd720896; // (n1/n2)
-    localparam razon_vueltas_inv = 38'd23831; // (n2/n1)
-    localparam f1 = 38'd4332; // ((n2/n1)^2 /4) * Isc^2
-    localparam uno = 38'd131072;
-    localparam cuatro_piL = 38'd41; //4*pi*L
-    localparam c1 = 38'd48; //c1 =  2 pi * L * (Ipc + Isc*n2/n1)
-    localparam pi = 38'd411774; //pi 
-    localparam c2 = 38'd82; //c2=  4pi*L*Ipc
-    localparam dos_pi2L = 38'd64; //2 pi^2 * L
-    localparam pi_medio = 38'd205887; //pi/2
-    localparam escalado = 38'd10638985; // 255/pi
-    localparam dos = 38'd262144;// 2 
-    localparam Ipc = 38'd262144;// 2
-    localparam Isc = 38'd262144;// 2
+
 
     
 
@@ -1663,7 +1652,7 @@ begin
     tau1 <= tau1;   
     tau2 <= tau2;
     phi <= phi;
-    modo <= 2'd3;      
+    modo <= modo;      
   end 
 end
 

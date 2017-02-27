@@ -23,7 +23,7 @@ module switch(clk, CE, rst, deadtime, V1, V2, Sp, Ss);
     input CE;
     input rst; 
     input [7:0] deadtime;
-    input signed [1:0] V1, V2;
+    input [1:0] V1, V2;
     output reg [3:0] Sp; //Conmutaciones del primario
     output reg [3:0] Ss; //Conmutaciones del secundario
     
@@ -53,17 +53,17 @@ module switch(clk, CE, rst, deadtime, V1, V2, Sp, Ss);
     always@(*)// maquina de estados para el voltaje V2
         case(state1)
         estado_V1:    begin 
-                        state1_next = (V1==2'd0)? estado_1_0 :((V1==-2'd1)?estado_1_n1 : estado_V1);//ojo con la comparacion
+                        state1_next = (V1==2'b00)? estado_1_0 :((V1==2'b11)?estado_1_n1 : estado_V1);//ojo con la comparacion
                     	contador1_next=8'd0;
                     	Sp=4'b0110;
                     end
         estado_V0:    begin
-                        state1_next = (V1==2'd1)? estado_0_1 :((V1==-2'd1)?estado_0_n1 : estado_V0);
+                        state1_next = (V1==2'b01)? estado_0_1 :((V1==2'b11)?estado_0_n1 : estado_V0);
                     	contador1_next=8'd0;
                     	Sp=4'b0101;
                     end
         estado_Vn1:    begin
-                        state1_next = (V1==2'd0)? estado_n1_0 :((V1==2'd1)?estado_n1_1 : estado_Vn1);
+                        state1_next = (V1==2'b00)? estado_n1_0 :((V1==2'b01)?estado_n1_1 : estado_Vn1);
                     	contador1_next=8'd0;
                     	Sp=4'b1001;
                     end  
@@ -108,17 +108,17 @@ module switch(clk, CE, rst, deadtime, V1, V2, Sp, Ss);
 	always@(*)// maquina de estados para el voltaje V2
         case(state2)
         estado_V1:    begin 
-                        state2_next = (V2==2'd0)? estado_1_0 :((V2==-2'd1)?estado_1_n1 : estado_V1);//ojo con la comparacion
+                        state2_next = (V2==2'b00)? estado_1_0 :((V2==2'b11)?estado_1_n1 : estado_V1);//ojo con la comparacion
                     	contador2_next=8'd0;
                     	Ss=4'b1001;
                     end
         estado_V0:    begin
-                        state2_next = (V2==2'd1)? estado_0_1 :((V2==-2'd1)?estado_0_n1 : estado_V0);
+                        state2_next = (V2==2'b01)? estado_0_1 :((V2==2'b11)?estado_0_n1 : estado_V0);
                     	contador2_next=8'd0;
                     	Ss=4'b0101;
                     end
         estado_Vn1:    begin
-                        state2_next = (V2==2'd0)? estado_n1_0 :((V2==2'd1)?estado_n1_1 : estado_Vn1);
+                        state2_next = (V2==2'b00)? estado_n1_0 :((V2==2'b01)?estado_n1_1 : estado_Vn1);
                     	contador2_next=8'd0;
                     	Ss=4'b0110;
                     end  

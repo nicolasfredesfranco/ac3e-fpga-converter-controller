@@ -71,23 +71,21 @@ module prueba_great_top();
 	initial begin
 		clk = 1'b0;
 		rst = 1'b0;
-		Vdc1 = 12'd1360; // 340 V
-		Vdc2 = 12'd403; //  100.8 V  
-		Iref = 12'd320;  // 10 A
+		Vdc1 = 12'd3481; // 340 V
+		Vdc2 = 12'd3440; //  100.8 V  
+		Iref = 12'd3072;  // 10 A
 		sync = 1'b0;
 
 		#700
 
 		sync = 1'b1;
 
-		
-		/*
 		#14300;
-		Iref = 14'd2294;// -10 A
+		Iref = 12'd1024;// -10 A
 		#20000;
-		Iref = 14'd6554; // 40 A
+		Iref = 12'd4095; // 20 A
 		// La prueba
-		*/
+	
 	end
 
 
